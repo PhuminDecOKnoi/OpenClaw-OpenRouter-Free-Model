@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
+  <title id="title">OpenClaw + OpenRouter Free Model repository banner</title>
+  <desc id="desc">A clean dark technology banner for the OpenClaw and OpenRouter Free Model repository.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="55%" stop-color="#050816"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="22%" cy="46%" r="45%">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#7c3aed" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#020617" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="45%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" x2="1">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" x2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#312e81"/>
+    </linearGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <style>
+      .title{font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:800;letter-spacing:-2px}
+      .sub{font-family:Inter,Segoe UI,Arial,sans-serif;font-weight:500;fill:#cbd5e1}
+      .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    </style>
+  </defs>
+  <rect width="1200" height="400" fill="url(#bg)"/>
+  <rect width="1200" height="400" fill="url(#glow)"/>
+  <g opacity="0.22">
+    <path d="M670 50 C820 20 990 48 1130 105" fill="none" stroke="#0ea5e9" stroke-width="1"/>
+    <path d="M630 335 C820 370 970 350 1135 300" fill="none" stroke="#7c3aed" stroke-width="1"/>
+    <circle cx="1070" cy="76" r="2" fill="#38bdf8"/>
+    <circle cx="1090" cy="309" r="2" fill="#a78bfa"/>
+  </g>
+  <g transform="translate(75 75)" filter="url(#softGlow)">
+    <circle cx="125" cy="125" r="118" fill="none" stroke="#111827" stroke-width="10"/>
+    <circle cx="125" cy="125" r="115" fill="none" stroke="url(#ring)" stroke-width="5" stroke-dasharray="168 18 96 18 72 14 110 20"/>
+    <g filter="url(#shadow)">
+      <path d="M84 153 L113 55 L155 43 L126 96 L168 82 L204 90 L150 116 L120 189 Z" fill="url(#cyan)" opacity="0.95"/>
+      <path d="M79 149 L107 72 L86 96 L60 173 L96 211 Z" fill="url(#violet)"/>
+      <path d="M123 189 L168 140 L218 133 L184 158 L154 221 Z" fill="url(#orange)"/>
+      <path d="M115 74 L145 35 L190 30 L158 48 L137 83 Z" fill="#8b5cf6" opacity="0.96"/>
+      <path d="M100 191 L132 220 L125 246 L87 194 Z" fill="#312e81" opacity="0.95"/>
+      <path d="M140 117 L177 103 L210 109 L170 129 Z" fill="#38bdf8" opacity="0.96"/>
+    </g>
+  </g>
+  <g transform="translate(355 68)">
+    <text class="title" x="0" y="72" font-size="66" fill="#f8fafc" filter="url(#softGlow)">OpenClaw</text>
+    <text class="title" x="370" y="72" font-size="66" fill="#7c3aed" filter="url(#softGlow)">+</text>
+    <text class="title" x="0" y="145" font-size="62" fill="url(#cyan)" filter="url(#softGlow)">OpenRouter</text>
+    <text class="title" x="410" y="145" font-size="62" fill="url(#orange)" filter="url(#softGlow)">Free Model</text>
+    <text class="sub" x="0" y="198" font-size="24">Installation</text>
+    <circle cx="135" cy="190" r="4" fill="#7c3aed"/>
+    <text class="sub" x="154" y="198" font-size="24">Configuration</text>
+    <circle cx="333" cy="190" r="4" fill="#38bdf8"/>
+    <text class="sub" x="352" y="198" font-size="24">Workshop</text>
+    <circle cx="470" cy="190" r="4" fill="#7c3aed"/>
+    <text class="sub" x="489" y="198" font-size="24">Cost-Safe AI Agent Workflows</text>
+  </g>
+  <g transform="translate(785 292)">
+    <rect x="0" y="0" width="310" height="58" rx="10" fill="#020617" stroke="#0ea5e9" stroke-opacity="0.55"/>
+    <rect x="12" y="10" width="54" height="38" rx="7" fill="#07111f" stroke="#8b5cf6" stroke-opacity="0.65"/>
+    <text class="mono" x="26" y="37" font-size="26" fill="#22d3ee">›_</text>
+    <text class="mono" x="90" y="36" font-size="20" fill="#94a3b8">$</text>
+    <text class="mono" x="112" y="36" font-size="22" fill="#22d3ee">openclaw</text>
+    <text class="mono" x="220" y="36" font-size="22" fill="#e2e8f0">init</text>
+  </g>
+  <line x1="78" y1="340" x2="765" y2="340" stroke="url(#ring)" stroke-width="2" opacity="0.85"/>
+  <circle cx="765" cy="340" r="4" fill="#f59e0b" filter="url(#softGlow)"/>
+</svg>
