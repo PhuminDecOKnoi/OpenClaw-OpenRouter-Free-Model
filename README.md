@@ -1,115 +1,199 @@
-# OpenClaw + OpenRouter Free Model Installation & Operation Manual
+# OpenClaw + OpenRouter Free Model
 
-> คู่มือภาษาไทยสำหรับติดตั้ง ใช้งาน สอน และแชร์การใช้งาน **OpenClaw** ร่วมกับ **OpenRouter Free Model**  
-> เหมาะสำหรับ macOS เป็นหลัก และปรับใช้กับ Linux / WSL2 ได้
+![Documentation](https://img.shields.io/badge/type-documentation-blue)
+![OpenClaw](https://img.shields.io/badge/platform-OpenClaw-purple)
+![OpenRouter](https://img.shields.io/badge/provider-OpenRouter-orange)
+![Language](https://img.shields.io/badge/language-Thai-lightgrey)
+![Security](https://img.shields.io/badge/security-first-critical)
 
----
-
-## สารบัญ
-
-1. [ภาพรวมระบบ](#1-ภาพรวมระบบ)
-2. [เตรียมเครื่องก่อนติดตั้ง](#2-เตรียมเครื่องก่อนติดตั้ง)
-3. [ติดตั้ง OpenClaw](#3-ติดตั้ง-openclaw)
-4. [เปิด Dashboard และตรวจ Gateway](#4-เปิด-dashboard-และตรวจ-gateway)
-5. [สร้าง OpenRouter API Key](#5-สร้าง-openrouter-api-key)
-6. [เชื่อม OpenClaw กับ OpenRouter](#6-เชื่อม-openclaw-กับ-openrouter)
-7. [ตั้งค่า OpenRouter Free Model](#7-ตั้งค่า-openrouter-free-model)
-8. [ทดสอบ Model](#8-ทดสอบ-model)
-9. [ตั้งค่า Web Search](#9-ตั้งค่า-web-search)
-10. [สร้าง Cron Job แบบประหยัด](#10-สร้าง-cron-job-แบบประหยัด)
-11. [อ่านไฟล์ เขียนไฟล์ และสร้างโฟลเดอร์](#11-อ่านไฟล์-เขียนไฟล์-และสร้างโฟลเดอร์)
-12. [ดูแล Cron Job](#12-ดูแล-cron-job)
-13. [Telegram Recovery](#13-telegram-recovery)
-14. [OpenRouter Cost Control](#14-openrouter-cost-control)
-15. [Context Overflow Playbook](#15-context-overflow-playbook)
-16. [Model Strategy](#16-model-strategy)
-17. [AorAke Labour Law Counsel Agent](#17-aorake-labour-law-counsel-agent)
-18. [Security & Token Hygiene](#18-security--token-hygiene)
-19. [Rollback Plan](#19-rollback-plan)
-20. [Troubleshooting](#20-troubleshooting)
-21. [Workshop Checklist](#21-workshop-checklist)
-22. [Command Cheat Sheet](#22-command-cheat-sheet)
+> คู่มือมาตรฐานภาษาไทยสำหรับติดตั้ง กำหนดค่า ใช้งาน สอน และดูแล **OpenClaw** ร่วมกับ **OpenRouter Free Model** โดยเน้นการใช้งานจริง การควบคุมต้นทุน ความปลอดภัยของ API Key และการนำไปใช้เป็น workshop สำหรับผู้เรียนด้าน IT / AI Agent / Automation
 
 ---
 
-## 1. ภาพรวมระบบ
+## Overview
 
-OpenClaw คือระบบ AI Agent ที่รันบนเครื่องผู้ใช้ มี Gateway, Dashboard, Model Provider, Channel เช่น Telegram และระบบ Cron สำหรับงานอัตโนมัติ
+**OpenClaw** คือระบบ AI Agent ที่ทำหน้าที่เป็น gateway ระหว่างผู้ใช้ ช่องทางสื่อสาร เครื่องมือ และ model provider หลายรูปแบบ เช่น OpenRouter, OpenAI, Anthropic, Gemini หรือ local model ผ่าน endpoint ที่กำหนดได้
+
+Repository นี้จัดทำขึ้นเพื่อเป็นคู่มือใช้งาน OpenClaw กับ **OpenRouter Free Model** โดยมีเป้าหมายหลัก 4 ด้าน:
+
+1. ติดตั้งและตรวจสอบ OpenClaw ให้พร้อมใช้งาน
+2. เชื่อมต่อ OpenRouter อย่างปลอดภัย
+3. เลือกใช้ free model หรือ cost-sensitive model โดยลดความเสี่ยงด้านค่าใช้จ่าย
+4. สร้าง workflow สำหรับ Telegram, Dashboard, Web Search, Cron และไฟล์ local
+
+---
+
+## Who This Repository Is For
+
+| กลุ่มผู้ใช้ | เหมาะกับ |
+|---|---|
+| ผู้เริ่มต้นใช้งาน AI Agent | ต้องการติดตั้ง OpenClaw และทดลอง OpenRouter |
+| วิทยากร / อาจารย์ / Trainer | ต้องการคู่มือสอนแบบ step-by-step |
+| นักศึกษา IT / CS / Software Engineering | ต้องการเข้าใจ architecture ของ AI Agent |
+| Developer / Automation User | ต้องการตั้ง Cron, Telegram และ Web Search |
+| HR / Compliance / Knowledge Worker | ต้องการใช้ AI Agent ช่วยสรุป ค้นหา และจัดหมวดข้อมูล |
+
+---
+
+## Key Concepts
+
+| คำศัพท์ | ความหมาย |
+|---|---|
+| **OpenClaw Gateway** | ตัวกลางที่รับคำสั่งจากผู้ใช้และส่งงานไปยัง agent / model / tool |
+| **Dashboard** | หน้าเว็บ local สำหรับตรวจสถานะและควบคุมระบบ |
+| **Model Provider** | ผู้ให้บริการโมเดล เช่น OpenRouter, OpenAI, Anthropic, Gemini |
+| **Model Ref** | รูปแบบอ้างอิงโมเดล เช่น `openrouter/<provider>/<model>` |
+| **Agent Session** | session การสนทนาหรือการทำงานของ AI Agent |
+| **Tool** | ความสามารถเสริม เช่น Web Search, File Search, Cron, local files |
+| **Cron Automation** | งานอัตโนมัติตามเวลา เช่น daily brief หรือ monitoring |
+| **Free Model** | โมเดลที่ OpenRouter แสดงว่าไม่มีค่าใช้จ่าย หรือมี suffix `:free` ตาม catalog ปัจจุบัน |
+
+---
+
+## Architecture
 
 ```text
-User / Telegram / Dashboard
+User / Student / Trainer
+        ↓
+Telegram / Dashboard / CLI
         ↓
 OpenClaw Gateway
         ↓
 Agent Session
         ↓
-Model Provider เช่น OpenRouter
+Model Provider Layer
+- OpenRouter
+- OpenAI
+- Anthropic
+- Gemini
+- Local endpoint
         ↓
-Tools / Files / Web / Cron / Excel
+Tool Layer
+- Web Search
+- Files
+- Cron
+- Logs
+- External APIs
+        ↓
+Output
+- Summary
+- Report
+- Classification
+- Draft
+- Teaching Demo
 ```
 
-OpenRouter คือบริการรวมโมเดลหลายค่ายไว้หลัง API เดียว เช่น Qwen, Llama, DeepSeek, Gemini, GPT OSS และอื่น ๆ
+### Teaching Note
 
-### Free Model คืออะไร
-
-| ประเภท | ความหมาย | เหมาะกับ |
-|---|---|---|
-| `openrouter/free` | ให้ OpenRouter เลือก free model ที่พร้อมใช้ | ทดลอง / สอน / งานเบา |
-| `<model-id>:free` | เลือก free variant ของ model เฉพาะ | คุม model ได้มากขึ้น |
-| `openrouter/auto` | OpenRouter เลือก model ให้ | สะดวก แต่มีโอกาสเสีย credit |
-
-> ถ้าต้องการ **free-only** อย่าใช้ `openrouter/auto` เป็นค่าเริ่มต้น
+ให้อธิบายกับผู้เรียนว่า OpenClaw ไม่ใช่ตัวโมเดลโดยตรง แต่เป็น **agent gateway / orchestration layer** ที่เชื่อมผู้ใช้กับ model provider และ tools ต่าง ๆ
 
 ---
 
-## 2. เตรียมเครื่องก่อนติดตั้ง
+## Repository Scope
 
-ตรวจ macOS และ Node.js:
+Repository นี้ครอบคลุม:
+
+- OpenClaw installation baseline
+- OpenRouter API key setup
+- Model configuration concept
+- Free model usage pattern
+- Web Search configuration
+- Cron automation pattern
+- Telegram recovery
+- File workflow
+- Security and token hygiene
+- Troubleshooting
+- Workshop checklist
+- Command cheat sheet
+
+Repository นี้ **ไม่ควร** ใช้เก็บข้อมูลต่อไปนี้:
+
+- API Key จริง
+- Telegram Bot Token จริง
+- Gateway Token จริง
+- Password
+- `.env` ที่มี secret
+- ไฟล์ลูกค้า / ข้อมูลส่วนบุคคล / confidential data
+
+---
+
+## Requirements
+
+### Recommended Environment
+
+| Component | Recommendation |
+|---|---|
+| OS | macOS เป็นหลัก; Linux / WSL2 ปรับใช้ได้ |
+| Node.js | ใช้ LTS หรือ version ที่ OpenClaw รองรับในเวลาติดตั้ง |
+| npm | ใช้ version ที่มาพร้อม Node.js |
+| Browser | Chrome / Edge / Safari สำหรับ Dashboard |
+| OpenRouter Account | ต้องมีบัญชีเพื่อสร้าง API Key |
+| Password Manager | แนะนำให้ใช้เก็บ API Key |
+
+### Pre-check
 
 ```bash
 sw_vers
 node --version
 npm --version
+which node
+which npm
 ```
 
-ค่าที่แนะนำ:
-
-```text
-Node.js 24 recommended
-หรือ Node.js 22.14+
-```
-
-ติดตั้ง Node.js ผ่าน Homebrew:
+หากยังไม่มี Node.js บน macOS:
 
 ```bash
 brew install node
 ```
 
-ตรวจซ้ำ:
+---
+
+## Quick Start
+
+> เหมาะสำหรับ demo หรือ workshop แบบเร็ว
 
 ```bash
-node --version
-npm --version
+# 1) Install OpenClaw
+npm install -g openclaw@latest
+
+# 2) Start onboarding
+openclaw onboard --install-daemon
+
+# 3) Check system status
+openclaw --version
+openclaw doctor
+openclaw gateway status
+
+# 4) Open Dashboard
+openclaw dashboard
+```
+
+หลังจากนั้นให้เชื่อม OpenRouter API Key และตรวจ model status:
+
+```bash
+openclaw models auth login --provider openrouter
+openclaw models status
+openclaw models status --probe
 ```
 
 ---
 
-## 3. ติดตั้ง OpenClaw
+## Installation
 
-### วิธีที่ 1: Installer Script
+### Option A: Installer Script
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-### วิธีที่ 2: npm
+### Option B: npm
 
 ```bash
 npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-ตรวจว่าติดตั้งสำเร็จ:
+### Verify Installation
 
 ```bash
 openclaw --version
@@ -117,39 +201,41 @@ openclaw doctor
 openclaw gateway status
 ```
 
-ผลที่ต้องการ:
+Expected result:
 
 ```text
 Gateway: running
-Connectivity probe: ok
 Dashboard: http://127.0.0.1:18789/
+Connectivity probe: ok
 ```
+
+> หากผลลัพธ์ไม่ตรง ให้ไปที่ [Troubleshooting](#troubleshooting)
 
 ---
 
-## 4. เปิด Dashboard และตรวจ Gateway
+## Dashboard and Gateway
 
-เปิด Dashboard:
+### Open Dashboard
 
 ```bash
 openclaw dashboard
 ```
 
-หรือ:
+หรือเปิดผ่าน browser:
 
 ```bash
 open http://127.0.0.1:18789
 ```
 
-Restart Gateway:
+### Restart Gateway
 
 ```bash
 openclaw gateway restart
 ```
 
-> คำสั่ง `openclaw restart` ไม่ถูกต้อง ให้ใช้ `openclaw gateway restart`
+> หลีกเลี่ยงคำสั่งที่ไม่ถูกต้อง เช่น `openclaw restart` ให้ใช้ `openclaw gateway restart`
 
-ตรวจสุขภาพระบบ:
+### Health Check
 
 ```bash
 openclaw gateway status
@@ -160,146 +246,151 @@ openclaw cron list
 
 ---
 
-## 5. สร้าง OpenRouter API Key
+## OpenRouter Setup
 
-ขั้นตอน:
+### 1. Create OpenRouter API Key
 
-1. เข้า OpenRouter
-2. Login
-3. ไปที่ **API Keys**
-4. กด **Create Key**
-5. ตั้งชื่อ เช่น `OpenClaw-Teaching-Free-Model`
-6. Copy key เก็บใน password manager
+1. Login OpenRouter
+2. ไปที่เมนู **API Keys**
+3. Create new key
+4. ตั้งชื่อ เช่น `OpenClaw-Teaching-Free-Model`
+5. Copy key และเก็บใน password manager
 
-รูปแบบ key ที่ถูกต้อง:
+รูปแบบ key โดยทั่วไป:
 
 ```text
 sk-or-v1-...
 ```
 
-ไม่ใช่:
+### 2. Connect OpenClaw with OpenRouter
 
-```text
-hf_...        # Hugging Face
-sk-proj-...   # OpenAI
-```
-
-### ห้ามส่งข้อมูลเหล่านี้ในแชต
-
-```text
-API key
-Gateway token
-Telegram bot token
-Password
-Session token
-.env
-auth-profiles.json
-```
-
----
-
-## 6. เชื่อม OpenClaw กับ OpenRouter
-
-Login OpenRouter:
+วิธีผ่าน OpenClaw model auth:
 
 ```bash
 openclaw models auth login --provider openrouter
 ```
 
-ถ้าใช้ไม่ได้ ให้ใช้ onboarding:
+อีกแนวทางที่ OpenRouter document ระบุสำหรับ onboarding:
 
 ```bash
-openclaw onboard --auth-choice openrouter-api-key
+export OPENROUTER_API_KEY="<your-openrouter-api-key>"
+openclaw onboard --auth-choice apiKey --token-provider openrouter --token "$OPENROUTER_API_KEY"
 ```
 
-ตรวจสถานะ:
+### 3. Verify Provider Status
 
 ```bash
+openclaw models auth list
 openclaw models status
 openclaw models status --probe
 ```
 
 ---
 
-## 7. ตั้งค่า OpenRouter Free Model
+## Model Strategy
 
-### ตั้ง Default เป็น Free Router
+### Recommended Principle
 
-```bash
-openclaw models set openrouter/free
+```text
+Use exact model refs.
+Avoid ambiguous model refs.
+Verify free model status before classroom demo.
+Keep fallback model cost-safe.
 ```
 
-ถ้า model ref ไม่ตรง ให้ตรวจรายการก่อน:
+### Model Ref Pattern
+
+OpenClaw ใช้แนวคิด model ref แบบ `provider/model`
+
+ตัวอย่าง:
+
+```text
+openrouter/<provider>/<model-id>
+openrouter/<provider>/<model-id>:free
+```
+
+หาก model ID ของ OpenRouter มี `/` อยู่ภายใน ให้ใส่ provider prefix ให้ครบ เช่น:
+
+```text
+openrouter/moonshotai/kimi-k2
+```
+
+### Find Available Models
 
 ```bash
 openclaw models list --provider openrouter
+openclaw models scan
 ```
 
-บาง build อาจใช้:
+### Set Primary Model
+
+ให้เลือก model จากรายการจริงที่ตรวจพบก่อน แล้วแทนค่าลงในคำสั่งนี้:
 
 ```bash
-openclaw models set openrouter/openrouter/free
+openclaw models set "openrouter/<provider>/<model-id>:free"
 ```
 
-### ตั้ง fallback เป็น Free Router
-
-```bash
-openclaw models fallbacks clear
-openclaw models fallbacks add openrouter/free
-```
-
-หรือถ้า exact ref เป็นอีกแบบ:
+### Set Fallback
 
 ```bash
 openclaw models fallbacks clear
-openclaw models fallbacks add openrouter/openrouter/free
+openclaw models fallbacks add "openrouter/<provider>/<fallback-model-id>:free"
 ```
 
-เพิ่ม alias:
+### Add Alias
 
 ```bash
-openclaw models aliases add or-free openrouter/free
+openclaw models aliases add or-free "openrouter/<provider>/<model-id>:free"
+openclaw models aliases list
 ```
 
-Restart และ Probe:
+### Restart and Probe
 
 ```bash
 openclaw gateway restart
 openclaw models status --probe
 ```
 
----
+### Classroom Safe Default
 
-## 8. ทดสอบ Model
-
-ทดสอบผ่าน CLI:
-
-```bash
-openclaw models status --probe
-```
-
-ทดสอบผ่าน Dashboard:
-
-```bash
-openclaw dashboard
-```
-
-ส่งข้อความสั้น ๆ:
+สำหรับห้องเรียนหรือ workshop ให้ใช้แนวทางนี้:
 
 ```text
-สวัสดี ช่วยตอบสั้น ๆ ว่าระบบพร้อมใช้งานหรือไม่
-```
-
-ทดสอบผ่าน Telegram:
-
-```text
-/new
-ตรวจสถานะสั้น ๆ
+Primary model  = verified free model
+Fallback model = verified free model
+Output limit   = short
+Tool calls     = minimal
+PDF reading    = avoid full-document reading
+Cron frequency = low
 ```
 
 ---
 
-## 9. ตั้งค่า Web Search
+## Free Model Operating Rules
+
+Free model อาจเปลี่ยน availability, rate limit, latency, context size หรือ tool support ได้ จึงควรตรวจสอบก่อนสอนทุกครั้ง
+
+### Rules
+
+1. ตรวจ catalog ก่อน demo
+2. อย่าใช้ `auto` หากต้องการควบคุม free-only อย่างเข้มงวด
+3. ใช้ exact model ref เมื่อสอนนิสิต
+4. จำกัด prompt และ output
+5. หลีกเลี่ยงการสั่ง agent อ่านไฟล์ใหญ่ทั้งฉบับ
+6. ไม่รัน Cron ถี่เกินจำเป็น
+7. ตรวจ logs หลัง demo
+
+### Demo Prompt
+
+```text
+ตอบเป็นภาษาไทยแบบสั้น ไม่เกิน 5 bullet
+อธิบายว่า OpenClaw กับ OpenRouter ทำงานร่วมกันอย่างไร
+ห้ามเรียก tool ภายนอก
+```
+
+---
+
+## Web Search
 
 ถ้าเจอ error:
 
@@ -311,587 +402,498 @@ web_search is disabled or no provider is available
 
 ```bash
 openclaw configure --section web
-```
-
-Provider ที่แนะนำ:
-
-| Provider | จุดเด่น | เหมาะกับ |
-|---|---|---|
-| DuckDuckGo | ไม่ใช้ API key | ทดสอบเร็ว |
-| Brave | API-based / เสถียรกว่า | ใช้งานจริง |
-| Gemini Search | grounding/citation | สรุปพร้อมแหล่งอ้างอิง |
-| SearXNG | self-host/privacy | ผู้ใช้ขั้นสูง |
-
-หลังตั้งค่า:
-
-```bash
 openclaw gateway restart
 ```
 
+### Provider Selection
+
+| Provider | จุดเด่น | เหมาะกับ |
+|---|---|---|
+| DuckDuckGo | ทดสอบเร็ว ไม่ต้องใช้ API Key | Classroom demo |
+| Brave | API-based และคุมคุณภาพได้ดีขึ้น | Production-like workflow |
+| Gemini Search | เหมาะกับ grounding / citation | Research workflow |
+| SearXNG | self-host / privacy | Advanced user |
+
+### Teaching Note
+
+ให้นักศึกษาแยกให้ออกระหว่าง:
+
+- Model answering from memory
+- Model answering with web search
+- Model answering with cited / grounded information
+
 ---
 
-## 10. สร้าง Cron Job แบบประหยัด
+## Cron Automation
 
-หลักการสำหรับ Free Model:
+Cron เหมาะกับงานซ้ำ เช่น daily brief, file reminder, monitoring หรือ summary
+
+### Cost-Safe Cron Design
 
 ```text
-จำกัดผลลัพธ์ไม่เกิน 3 รายการ
-ไม่อ่าน PDF เต็ม
-ไม่ทำวิเคราะห์เต็ม
-ตอบไม่เกิน 600–900 คำ
-ถามก่อนทำงานหนักต่อ
+จำกัดจำนวนผลลัพธ์
+จำกัดความยาวคำตอบ
+ใช้ session isolated
+ใช้ model cost-safe
+ไม่อ่านไฟล์ยาวเต็มฉบับ
+ไม่ทำ chain of tools ยาวเกินไป
 ```
 
-ตัวอย่าง Daily Ultra-light Brief:
+### Example: Daily Ultra-light Brief
 
 ```bash
 MSG=$(cat <<'EOF'
-ทำ Daily Legal Discovery แบบ Ultra-light
+ทำ Daily Brief แบบ Ultra-light
 
-ค้นเฉพาะรายการสำคัญช่วง 7 วันล่าสุด
-จำกัดไม่เกิน 3 รายการ
-ตอบเป็นภาษาไทย กระชับ ไม่เกิน 700 คำ
-ห้ามอ่าน PDF เต็ม
-ห้ามทำบทวิเคราะห์ยาว
-ถ้าไม่พบ ให้ตอบว่า “วันนี้ไม่พบรายการสำคัญที่เข้าเกณฑ์”
+เงื่อนไข:
+- สรุปเฉพาะประเด็นสำคัญไม่เกิน 3 รายการ
+- ตอบภาษาไทย
+- ไม่เกิน 700 คำ
+- ห้ามอ่าน PDF เต็ม
+- ห้ามทำบทวิเคราะห์ยาว
+- ถ้าไม่พบข้อมูล ให้ตอบว่า “ไม่พบรายการสำคัญที่เข้าเกณฑ์”
 
-รูปแบบ:
+รูปแบบผลลัพธ์:
 1) สถานะรวม
 2) รายการสำคัญ
-3) ผลกระทบต่อ HR/Compliance แบบสั้น
-4) แหล่งอ้างอิงถ้ามี
+3) ข้อควรติดตาม
 EOF
 )
 
 openclaw cron add \
-  --name "daily-ultra-light-legal-brief" \
+  --name "daily-ultra-light-brief" \
   --cron "0 8 * * *" \
   --tz "Asia/Bangkok" \
   --session isolated \
   --announce \
   --channel telegram \
-  --to "8757711459" \
-  --model openrouter/free \
+  --to "<telegram-chat-id>" \
+  --model "openrouter/<provider>/<model-id>:free" \
   --message "$MSG"
 ```
 
-ตรวจ Cron:
-
-```bash
-openclaw cron list
-```
-
-Run test:
-
-```bash
-openclaw cron run "<job-id>"
-openclaw cron runs --id "<job-id>"
-```
-
----
-
-## 11. อ่านไฟล์ เขียนไฟล์ และสร้างโฟลเดอร์
-
-### หลักความปลอดภัย
-
-```text
-อ่านก่อน → ตรวจ path → backup ถ้าจะแก้ไฟล์ → เขียนแบบจำกัดขอบเขต → ตรวจผลทันที
-```
-
-### Workspace
-
-```text
-~/.openclaw/workspace
-~/Legal-Knowledge
-```
-
-เปิด workspace:
-
-```bash
-open "$HOME/.openclaw/workspace"
-```
-
-สร้างโฟลเดอร์:
-
-```bash
-mkdir -p "$HOME/Legal-Knowledge/01_Labour_Law"
-mkdir -p "$HOME/Legal-Knowledge/output/labour_law_register"
-mkdir -p "$HOME/Legal-Knowledge/output/case_law_log"
-```
-
-อ่านไฟล์:
-
-```bash
-cat "$HOME/Legal-Knowledge/INDEX.md"
-head -80 "$HOME/Legal-Knowledge/INDEX.md"
-tail -80 "$HOME/Legal-Knowledge/INDEX.md"
-```
-
-ค้นหาในไฟล์:
-
-```bash
-grep -n "ค่าชดเชย" "$HOME/Legal-Knowledge/01_Labour_Law/notes.md"
-grep -Rni "เลิกจ้าง" "$HOME/Legal-Knowledge/01_Labour_Law"
-```
-
-อ่าน DOCX บน macOS:
-
-```bash
-textutil -convert txt -stdout "$HOME/Legal-Knowledge/01_Labour_Law/example.docx" | head -80
-```
-
-ค้นหาไฟล์:
-
-```bash
-find "$HOME/Legal-Knowledge" -maxdepth 3 -type f -print
-find "$HOME/Legal-Knowledge" -maxdepth 3 -type f -name "*.md" -print
-find "$HOME/Legal-Knowledge" -maxdepth 5 -type f -name "*.xlsx" -print
-```
-
-เขียนไฟล์ใหม่:
-
-```bash
-cat <<'EOF' > "$HOME/Legal-Knowledge/INDEX.md"
-# Legal-Knowledge Index
-
-- 01_Labour_Law: กฎหมายแรงงาน
-- 02_Civil_Commercial_Code: ป.พ.พ.
-- 09_Case_Law: คำพิพากษา
-EOF
-```
-
-Append ไฟล์:
-
-```bash
-cat <<'EOF' >> "$HOME/Legal-Knowledge/INDEX.md"
-
-## Updated Notes
-- เพิ่มรายการใหม่วันนี้
-EOF
-```
-
-Backup ก่อนเขียนทับ:
-
-```bash
-cp "$HOME/Legal-Knowledge/INDEX.md" \
-   "$HOME/Legal-Knowledge/INDEX.backup.$(date +%Y%m%d-%H%M%S).md"
-```
-
-สร้าง CSV fallback:
-
-```bash
-cat <<'EOF' > "$HOME/Legal-Knowledge/output/labour_law_register/labour_law_register.csv"
-Run_Month,Legal_Title,Legal_Type,Source_Agency,Published_Date,Effective_Date,Key_Summary,Source_URL
-2026-05,No significant update,Monthly Log,System,,,,
-EOF
-```
-
-สร้าง symlink:
-
-```bash
-ln -s "$HOME/Legal-Knowledge" "$HOME/.openclaw/workspace/Legal-Knowledge"
-ls -la "$HOME/.openclaw/workspace" | grep Legal
-```
-
-### คำสั่งที่ควรระวังสูง
-
-| คำสั่ง | ความเสี่ยง |
-|---|---|
-| `rm` | ลบไฟล์ |
-| `rm -rf` | ลบทั้งโฟลเดอร์ |
-| `>` | เขียนทับไฟล์ |
-| `mv` | ย้าย/ทับไฟล์ |
-| `chmod` | เปลี่ยนสิทธิ์ |
-| `sudo` | สิทธิ์สูง |
-
----
-
-## 12. ดูแล Cron Job
-
-คำสั่งหลัก:
+### Cron Management
 
 ```bash
 openclaw cron list
 openclaw cron run "<job-id>"
 openclaw cron runs --id "<job-id>"
-openclaw cron edit "<job-id>" --model openrouter/free
 openclaw cron disable "<job-id>"
 openclaw cron enable "<job-id>"
-```
-
-ควร disable เมื่อพบ:
-
-```text
-error ซ้ำหลายครั้ง
-billing error
-context overflow
-web_search disabled
-Telegram target ผิด
-job อยู่ใน backoff
+openclaw cron edit "<job-id>" --model "openrouter/<provider>/<model-id>:free"
 ```
 
 ---
 
-## 13. Telegram Recovery
+## Telegram Recovery
 
-ถ้าเจอ:
-
-```text
-Something went wrong while processing your request.
-Please try again, or use /new to start a fresh session.
-```
-
-ใน Telegram ให้ส่ง:
+เมื่อ Telegram session ค้างหรือ context เต็ม ให้ reset session:
 
 ```text
 /new
 ```
 
-จากนั้นทดสอบ:
+แล้วทดสอบด้วยข้อความสั้น:
 
 ```text
-ตรวจสถานะสั้น ๆ
+ตรวจสถานะสั้น ๆ ว่าระบบพร้อมใช้งานหรือไม่
 ```
 
-ใช้ `/new` เมื่อ:
+### Teaching Note
+
+ให้อธิบายว่า `/new` เป็นการลดปัญหา context overflow และ stale session แต่ไม่ได้แก้ปัญหา API Key หรือ provider outage
+
+---
+
+## File Workflow
+
+### Safety Principle
 
 ```text
-session ค้าง
-context overflow
-model เปลี่ยนใหม่
-agent ตอบไม่จบ
-tool error ต่อเนื่อง
-คุยยาวมากแล้ว
+Read before write.
+Backup before edit.
+Use explicit path.
+Avoid secrets.
+Review output.
+```
+
+### Create Workspace
+
+```bash
+mkdir -p "$HOME/AI-Agent-Lab/input"
+mkdir -p "$HOME/AI-Agent-Lab/output"
+mkdir -p "$HOME/AI-Agent-Lab/backup"
+```
+
+### Read Files
+
+```bash
+cat "$HOME/AI-Agent-Lab/input/sample.txt"
+head -80 "$HOME/AI-Agent-Lab/input/sample.txt"
+tail -80 "$HOME/AI-Agent-Lab/input/sample.txt"
+```
+
+### Search Files
+
+```bash
+find "$HOME/AI-Agent-Lab" -maxdepth 3 -type f -print
+grep -Rni "keyword" "$HOME/AI-Agent-Lab/input"
+```
+
+### Write Markdown
+
+```bash
+cat <<'EOF' > "$HOME/AI-Agent-Lab/output/summary.md"
+# Summary
+
+This is a sample summary.
+EOF
+```
+
+### Backup Before Edit
+
+```bash
+cp "$HOME/AI-Agent-Lab/output/summary.md" \
+   "$HOME/AI-Agent-Lab/backup/summary.backup.$(date +%Y%m%d-%H%M%S).md"
 ```
 
 ---
 
-## 14. OpenRouter Cost Control
+## Prompt Pattern
 
-### Free-only vs Auto
-
-| Model Ref | ความหมาย | ความเสี่ยงค่าใช้จ่าย |
-|---|---|---|
-| `openrouter/free` | free router | ต่ำสุด |
-| `<model-id>:free` | free variant | ต่ำ |
-| `openrouter/auto` | auto route | อาจเสียเงิน |
-| paid model | model คิดเงิน | เสียเงินตาม usage |
-
-Error 402:
+ใช้ pattern นี้สำหรับสอนนักศึกษา:
 
 ```text
-402 This request requires more credits, or fewer max_tokens.
+บทบาท:
+คุณคือ...
+
+งาน:
+ต้องการให้ทำอะไร
+
+ข้อมูล:
+ข้อมูลที่ใช้ประกอบ
+
+ข้อจำกัด:
+ความยาว / ภาษา / ห้ามทำอะไร / ใช้แหล่งใด
+
+รูปแบบผลลัพธ์:
+หัวข้อ / ตาราง / JSON / bullet / checklist
+
+เกณฑ์คุณภาพ:
+ต้องตรวจอะไร / ต้องอ้างอิงอะไร / ต้องระบุข้อจำกัดอย่างไร
 ```
 
-วิธีแก้:
+### Example
 
 ```text
-1) เติม credit
-2) ลด prompt/output
-3) เปลี่ยนเป็น openrouter/free
-4) ปิด cron ที่กิน token
-```
+บทบาท:
+คุณคือผู้ช่วยสรุปข่าวเทคโนโลยีสำหรับนักศึกษา IT
 
----
+งาน:
+สรุปข่าว AI Agent ล่าสุดไม่เกิน 3 ข่าว
 
-## 15. Context Overflow Playbook
+ข้อจำกัด:
+- ตอบภาษาไทย
+- ข่าวละไม่เกิน 4 บรรทัด
+- ระบุแหล่งที่มาถ้ามี
+- ถ้าข้อมูลไม่เพียงพอ ให้ระบุว่า “ข้อมูลไม่เพียงพอ”
 
-เกิดจาก:
-
-```text
-prompt + tool input + chat history + output ที่ขอ รวมกันเกิน context limit ของ model
-```
-
-วิธีแก้:
-
-```text
-ใช้ /new ใน Telegram
-ลด prompt
-ลด output ไม่เกิน 700–900 คำ
-จำกัดผลลัพธ์ไม่เกิน 3 รายการ
-ไม่อ่าน PDF เต็มใน cron
-แยก Discovery กับ Analysis
-```
-
-Ultra-light Prompt Pattern:
-
-```text
-ค้นเฉพาะ 7 วันล่าสุด
-จำกัดไม่เกิน 3 รายการ
-ห้ามอ่าน PDF เต็ม
-ห้ามทำบทวิเคราะห์เต็ม
-ตอบไม่เกิน 700 คำ
-ถามท้ายว่า ต้องการให้วิเคราะห์ต่อหรือไม่
+รูปแบบผลลัพธ์:
+1) ประเด็น
+2) สรุป
+3) ผลกระทบต่อผู้เรียน IT
 ```
 
 ---
 
-## 16. Model Strategy
+## Security and Token Hygiene
 
-| งาน | Model Strategy |
-|---|---|
-| ติดตั้ง/ทดสอบ | `openrouter/free` |
-| Cron เบา | `openrouter/free` หรือ free model เฉพาะ |
-| Chat ทั่วไป | `openrouter/auto` เมื่อมี credit |
-| วิเคราะห์กฎหมาย | model context ใหญ่ / paid model |
-| อ่าน PDF ยาว | model context ใหญ่ + แบ่งงานเป็นช่วง |
-| Excel append | prompt สั้น / tool-friendly |
-| งาน private/offline | Ollama local |
-
-แนวคิด 3 Mode:
+### Never Commit These
 
 ```text
-Discovery Mode: ค้นเบา / free model
-Counsel Mode: วิเคราะห์ลึก / context ใหญ่
-Record Mode: บันทึกฐานข้อมูล / prompt สั้น / append-only
-```
-
----
-
-## 17. AorAke Labour Law Counsel Agent
-
-Role:
-
-```text
-AorAke Labour Law Counsel Agent
-```
-
-Mission:
-
-```text
-ช่วยวิเคราะห์กฎหมายแรงงาน คำพิพากษา ข้อพิพาทแรงงาน HR Compliance และ Audit
-โดยยึดความน่าเชื่อถือ ความถูกต้อง และการใช้งานจริง
-```
-
-Workflow:
-
-```text
-ค้นหา → วิเคราะห์ → ประเมินความเสี่ยง → เสนอแนวทาง → ถามอนุมัติ → บันทึกฐานความรู้
-```
-
-Guardrails:
-
-```text
-ไม่เดากฎหมาย
-ไม่สร้างเลขฎีกาเอง
-ไม่อ้างแหล่งที่ไม่มีจริง
-ใช้แหล่งทางการก่อน
-ถ้า web_search ใช้ไม่ได้ ต้องแจ้งข้อจำกัด
-ถามก่อนบันทึก Excel
-append-only
-ตรวจ duplicate ก่อนบันทึก
-```
-
-รูปแบบวิเคราะห์กฎหมายแรงงาน:
-
-```text
-1) ข้อเท็จจริง
-2) ประเด็นกฎหมาย
-3) กฎหมายที่เกี่ยวข้อง
-4) วิเคราะห์
-5) ความเสี่ยง
-6) ทางเลือก
-7) เอกสารที่ควรเตรียม
-8) ข้อเสนอแนะ
-```
-
-IRLAC+:
-
-```text
-I = Issue
-R = Rule
-L = Legal Source
-A = Application
-C = Conclusion
-+ = HR / Compliance / Audit Impact
-```
-
----
-
-## 18. Security & Token Hygiene
-
-ห้ามเปิดเผย:
-
-```text
-API key
-Telegram bot token
-Gateway token
-OAuth token
+API Key
+Gateway Token
+Telegram Bot Token
 Password
+Session Token
 .env
 auth-profiles.json
+openclaw.json ที่มี secret
+client/customer files
+personal data
 ```
 
-ค้นหา secret ใน workspace/log:
-
-```bash
-grep -RniE "sk-|api[_-]?key|token|secret|password" "$HOME/.openclaw" --exclude-dir=node_modules
-```
-
-ถ้าเจอ warning:
+### Checklist
 
 ```text
-gateway.controlUi.allowInsecureAuth=true
+[ ] ไม่ paste API key ในแชตสาธารณะ
+[ ] ไม่ commit .env
+[ ] ใช้ password manager
+[ ] backup config ก่อนแก้
+[ ] ตรวจ logs ก่อนส่งต่อ
+[ ] ปิด/ลบ key ที่สงสัยว่าหลุด
+[ ] จำกัด scope ของ demo data
+[ ] ใช้ synthetic data ใน classroom
 ```
 
-ตรวจด้วย:
-
-```bash
-openclaw security audit
-```
-
----
-
-## 19. Rollback Plan
-
-Backup config ก่อนแก้:
+### Backup Config
 
 ```bash
 cp "$HOME/.openclaw/openclaw.json" \
    "$HOME/.openclaw/openclaw.backup.$(date +%Y%m%d-%H%M%S).json"
 ```
 
-หา backup ล่าสุด:
-
-```bash
-ls -lt "$HOME/.openclaw" | grep "openclaw.backup"
-```
-
-Restore:
-
-```bash
-cp "$HOME/.openclaw/openclaw.backup.YYYYMMDD-HHMMSS.json" \
-   "$HOME/.openclaw/openclaw.json"
-
-openclaw gateway restart
-openclaw models status --probe
-```
-
-Rollback model เป็น Free:
-
-```bash
-openclaw models set openrouter/free
-openclaw models fallbacks clear
-openclaw models fallbacks add openrouter/free
-openclaw gateway restart
-openclaw models status --probe
-```
-
 ---
 
-## 20. Troubleshooting
+## Troubleshooting
 
-| Error | สาเหตุ | วิธีแก้ |
+| Symptom / Error | Possible Cause | Action |
 |---|---|---|
-| `unknown command restart` | ใช้คำสั่งผิด | `openclaw gateway restart` |
-| `401 Missing Authentication header` | API key ผิด/หาย | login OpenRouter ใหม่ |
-| `402 Requires more credits` | credit ไม่พอ | ใช้ free model หรือเติม credit |
-| `Context overflow` | prompt/tool/output ใหญ่เกิน | ลด prompt/output, ใช้ `/new` |
-| `No endpoints found` | model route ใช้ไม่ได้ | ตรวจ `models list` |
-| `web_search disabled` | ยังไม่ตั้ง web provider | `openclaw configure --section web` |
-| `logs --tail` ไม่รองรับ | CLI version ไม่รับ flag | ใช้ `openclaw logs --help` |
+| `401` | API Key ผิด / หมดอายุ | login provider ใหม่ / สร้าง key ใหม่ |
+| `402` | credit ไม่พอ หรือ route ไป paid model | เปลี่ยนเป็น verified free model / ลด token |
+| `rate limit` | ใช้งานถี่เกิน / free model จำกัด request | รอ / ลด tool call / เปลี่ยน model |
+| `context overflow` | prompt + history + file ใหญ่เกิน | ใช้ `/new`, ลด prompt, แบ่งงาน |
+| `web_search disabled` | ยังไม่ได้ตั้ง web provider | `openclaw configure --section web` |
+| `unknown command restart` | ใช้คำสั่งผิด | ใช้ `openclaw gateway restart` |
+| Dashboard เปิดไม่ได้ | gateway ไม่ทำงาน / port issue | `openclaw gateway status`, restart gateway |
+| Cron ไม่ส่ง Telegram | channel / chat id / token ผิด | ตรวจ channel config และ cron runs |
+| Model ไม่ตอบ | provider auth / model ref ผิด | `openclaw models status --probe` |
 
----
-
-## 21. Workshop Checklist
-
-Installation Tick List:
-
-```text
-[ ] Node.js พร้อม
-[ ] OpenClaw ติดตั้งแล้ว
-[ ] Gateway running
-[ ] Dashboard เปิดได้
-[ ] OpenRouter API key login แล้ว
-[ ] Free model ตั้งค่าแล้ว
-[ ] Probe ผ่าน
-[ ] Telegram pairing ผ่าน
-[ ] Web search provider เปิดแล้ว
-[ ] Cron test ผ่าน
-```
-
-Troubleshooting Tick List:
-
-```text
-[ ] ดู cron list
-[ ] ดู cron runs
-[ ] ตรวจ model probe
-[ ] ตรวจ credit OpenRouter
-[ ] ตรวจ web_search
-[ ] ตรวจ Telegram target
-[ ] ใช้ /new ถ้า session ค้าง
-[ ] disable job ที่ error ซ้ำ
-[ ] backup ก่อนแก้ config
-```
-
----
-
-## 22. Command Cheat Sheet
+### Debug Commands
 
 ```bash
-# ตรวจระบบ
 openclaw doctor
 openclaw gateway status
 openclaw models status
 openclaw models status --probe
+openclaw models auth list
 openclaw cron list
+openclaw logs --help
+openclaw logs --follow
+```
 
-# Restart gateway
+---
+
+## Workshop Mode
+
+### 90-Minute Workshop
+
+| Time | Topic | Activity |
+|---|---|---|
+| 0–10 min | Concept | AI Agent, Gateway, Provider, Tool |
+| 10–25 min | Install | CLI + Dashboard check |
+| 25–40 min | OpenRouter | API Key + model status |
+| 40–55 min | Prompt | short prompt + model test |
+| 55–70 min | Web / File | demo tool boundary |
+| 70–85 min | Cron | create safe daily brief |
+| 85–90 min | Wrap-up | security checklist |
+
+### 3-Hour Workshop
+
+| Time | Topic | Activity |
+|---|---|---|
+| 0–20 min | Architecture | diagram + concept discussion |
+| 20–45 min | Installation | install + gateway + dashboard |
+| 45–75 min | Provider | OpenRouter setup + model refs |
+| 75–105 min | Prompt Engineering | structured prompt lab |
+| 105–135 min | Tools | web search / file workflow |
+| 135–160 min | Cron | automation lab |
+| 160–175 min | Security | token hygiene + threat scenarios |
+| 175–180 min | Review | quiz + next steps |
+
+---
+
+## Classroom Lab Ideas
+
+### Lab 1: Model Status Check
+
+**Goal:** ให้นักศึกษาตรวจว่า OpenClaw เชื่อม provider ได้จริง
+
+```bash
+openclaw models status
+openclaw models status --probe
+```
+
+Deliverable:
+
+```text
+Screenshot หรือข้อความ status โดยไม่เปิดเผย API Key
+```
+
+### Lab 2: Prompt Pattern
+
+**Goal:** เขียน prompt ที่มี role, task, constraints และ output format
+
+Deliverable:
+
+```text
+Prompt 1 ชุด + output summary ไม่เกิน 300 คำ
+```
+
+### Lab 3: Cron Brief
+
+**Goal:** สร้าง Cron ที่จำกัด output และไม่ทำงานหนักเกินไป
+
+Deliverable:
+
+```text
+Cron command + expected output format
+```
+
+### Lab 4: Security Review
+
+**Goal:** ให้นักศึกษาตรวจ sample config ว่ามี secret หรือความเสี่ยงใด
+
+Deliverable:
+
+```text
+Security checklist + recommended fix
+```
+
+---
+
+## Command Cheat Sheet
+
+### System
+
+```bash
+openclaw --version
+openclaw doctor
+openclaw gateway status
 openclaw gateway restart
-
-# Dashboard
 openclaw dashboard
-open http://127.0.0.1:18789
+```
 
-# OpenRouter auth
-openclaw models auth login --provider openrouter
+### Models
 
-# ตั้ง free model
-openclaw models set openrouter/free
-openclaw models fallbacks clear
-openclaw models fallbacks add openrouter/free
-
-# ถ้า model ref ไม่ตรง
+```bash
+openclaw models status
+openclaw models status --probe
 openclaw models list --provider openrouter
+openclaw models scan
+openclaw models set "openrouter/<provider>/<model-id>:free"
+openclaw models fallbacks list
+openclaw models fallbacks clear
+openclaw models fallbacks add "openrouter/<provider>/<model-id>:free"
+openclaw models aliases list
+openclaw models aliases add or-free "openrouter/<provider>/<model-id>:free"
+```
 
-# Cron
+### Auth
+
+```bash
+openclaw models auth list
+openclaw models auth login --provider openrouter
+```
+
+### Web Search
+
+```bash
+openclaw configure --section web
+openclaw gateway restart
+```
+
+### Cron
+
+```bash
 openclaw cron list
 openclaw cron run "<job-id>"
 openclaw cron runs --id "<job-id>"
 openclaw cron disable "<job-id>"
 openclaw cron enable "<job-id>"
+openclaw cron edit "<job-id>" --model "openrouter/<provider>/<model-id>:free"
+```
 
-# Logs
+### Logs
+
+```bash
 openclaw logs --help
 openclaw logs --follow
-
-# Web search
-openclaw configure --section web
-openclaw gateway restart
 ```
 
 ---
 
-## บทสรุป
-
-การใช้ OpenClaw กับ OpenRouter Free Model เหมาะสำหรับการเรียน ทดลอง สอน และทำงานเบา เช่น Telegram brief, candidate discovery, classification และ prompt prototype
-
-ถ้าจะใช้งานจริงด้านกฎหมายหรือ HR Compliance ควรออกแบบเป็น 3 ชั้น:
+## Recommended Repository Structure
 
 ```text
-1) Discovery Mode: openrouter/free
-2) Counsel Mode: model ที่มี context ใหญ่และมี credit เพียงพอ
-3) Record Mode: append-only หลังอนุมัติ
+.
+├── README.md
+├── docs/
+│   ├── openrouter-setup.md
+│   ├── model-strategy.md
+│   ├── cron-recipes.md
+│   ├── troubleshooting.md
+│   └── security-checklist.md
+├── lessons/
+│   └── openclaw_openai_gpt_5_x_lesson_th.md
+├── examples/
+│   ├── prompts/
+│   ├── cron/
+│   └── telegram/
+└── LICENSE
 ```
 
-หัวใจสำคัญ:
+> หาก repository ยังไม่มีโครงสร้างนี้ ให้ค่อย ๆ เพิ่มใน version branch ตาม workflow ของ project
+
+---
+
+## Maintenance Notes
+
+ก่อนสอนหรือ demo ทุกครั้ง:
 
 ```text
-ใช้ free model ให้ถูกงาน
-ไม่ใช้ openrouter/auto ถ้าต้องการ free-only
-ลด prompt
-จำกัด output
-ตรวจ logs
+[ ] ตรวจ OpenClaw version
+[ ] ตรวจ Node.js version
+[ ] ตรวจ OpenRouter API Key
+[ ] ตรวจ available free models
+[ ] ตรวจ model probe
+[ ] ตรวจ Telegram channel / chat id
+[ ] ตรวจ Cron jobs ที่เปิดอยู่
+[ ] ตรวจว่าไม่มี secret ในไฟล์ตัวอย่าง
+```
+
+หลังสอน:
+
+```text
+[ ] ปิด Cron ที่ไม่ใช้
+[ ] rotate API Key หากใช้เครื่องร่วม
+[ ] ลบ log หรือ sample data ที่มีข้อมูลส่วนบุคคล
+[ ] บันทึก known issues เพื่อปรับปรุงบทเรียนครั้งถัดไป
+```
+
+---
+
+## External References
+
+- OpenClaw Models CLI: https://docs.openclaw.ai/cli/models
+- OpenClaw Model Providers: https://docs.openclaw.ai/concepts/model-providers
+- OpenClaw OpenRouter Notes: https://docs.openclaw.ai/openrouter
+- OpenRouter OpenClaw Integration: https://openrouter.ai/docs/cookbook/coding-agents/openclaw-integration
+- OpenRouter Documentation: https://openrouter.ai/docs
+
+---
+
+## License
+
+โปรดตรวจสอบไฟล์ `LICENSE` ของ repository นี้ก่อนนำไปเผยแพร่ ดัดแปลง หรือใช้ประกอบการอบรมเชิงพาณิชย์
+
+หากยังไม่มีไฟล์ `LICENSE` แนะนำให้เพิ่ม license ให้ชัดเจน เช่น MIT License หรือ license ที่เจ้าของ repository กำหนด
+
+---
+
+## Summary
+
+OpenClaw + OpenRouter Free Model เหมาะสำหรับการเรียนรู้และสาธิต AI Agent workflow เพราะช่วยให้เห็นภาพครบตั้งแต่ gateway, model provider, prompt, tools, cron automation, Telegram และ security hygiene
+
+หลักปฏิบัติที่ควรยึดเสมอ:
+
+```text
+ตรวจสถานะก่อนสอน
+ใช้ exact model ref
+ยืนยัน free model ก่อน demo
+จำกัด prompt/output
 ไม่เปิดเผย secret
 backup ก่อนแก้ config
+ใช้ /new เมื่อ context ค้าง
+ตรวจ logs หลังจบงาน
 ```
