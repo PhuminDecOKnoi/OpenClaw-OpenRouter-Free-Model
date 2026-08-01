@@ -1,310 +1,236 @@
-# คู่มือการติดตั้ง OpenClaw กับ OpenRouter Free Model
+# OpenClaw + OpenRouter Free Model Installation Manual
 
-> เวอร์ชันเอกสาร: v1.1  
-> วันที่ปรับปรุง: 1 สิงหาคม 2026  
-> ผู้จัดทำ: อ.เอก / AorAke  
-> เหมาะสำหรับ: ใช้สอน ใช้แชร์ ใช้เป็น Runbook ติดตั้งจริง และใช้เป็นเอกสารประกอบ Workshop  
-> กลุ่มเป้าหมาย: วิทยากรด้าน IT, นักศึกษา IT / CS / Software Engineering / Digital Business, ผู้เริ่มต้นสร้าง AI Agent  
-> ขอบเขต: macOS เป็นหลัก และสามารถปรับใช้กับ Linux / WSL2 ได้  
-> แหล่งข้อมูลที่ใช้ปรับปรุง: OpenClaw Docs, OpenRouter Docs, OpenRouter Free Models Router, OpenRouter Quickstart
-
----
-
-## สารบัญ
-
-1. [เป้าหมายของคู่มือนี้](#เป้าหมายของคู่มือนี้)
-2. [สิ่งที่ปรับปรุงใน v1.1](#สิ่งที่ปรับปรุงใน-v11)
-3. [ภาพรวม OpenClaw + OpenRouter](#บทที่-1-ภาพรวม-openclaw--openrouter)
-4. [คำศัพท์สำคัญ](#บทที่-2-คำศัพท์สำคัญ)
-5. [OpenRouter Free Model คืออะไร](#บทที่-3-openrouter-free-model-คืออะไร)
-6. [เตรียมเครื่องก่อนติดตั้ง](#บทที่-4-เตรียมเครื่องก่อนติดตั้ง)
-7. [ติดตั้ง OpenClaw](#บทที่-5-ติดตั้ง-openclaw)
-8. [Onboarding OpenRouter](#บทที่-6-onboarding-openrouter)
-9. [ตั้งค่า Free Model ใน OpenClaw](#บทที่-7-ตั้งค่า-free-model-ใน-openclaw)
-10. [ตรวจสอบ Model และ Auth](#บทที่-8-ตรวจสอบ-model-และ-auth)
-11. [ตั้งค่า Web Search](#บทที่-9-ตั้งค่า-web-search)
-12. [สร้าง Cron Job แบบประหยัด](#บทที่-10-สร้าง-cron-job-แบบประหยัด)
-13. [อ่านไฟล์ เขียนไฟล์ และ Workspace](#บทที่-11-อ่านไฟล์-เขียนไฟล์-และ-workspace)
-14. [Telegram Recovery](#บทที่-12-telegram-recovery)
-15. [Cost Control และ Rate Limit](#บทที่-13-cost-control-และ-rate-limit)
-16. [Context Overflow Playbook](#บทที่-14-context-overflow-playbook)
-17. [Security & Token Hygiene](#บทที่-15-security--token-hygiene)
-18. [Troubleshooting](#บทที่-16-troubleshooting)
-19. [Workshop สำหรับผู้สอน](#บทที่-17-workshop-สำหรับผู้สอน)
-20. [Assignment / Lab สำหรับนักศึกษา](#บทที่-18-assignment--lab-สำหรับนักศึกษา)
-21. [Command Cheat Sheet](#บทที่-19-command-cheat-sheet)
-22. [แหล่งข้อมูลภายนอก](#แหล่งข้อมูลภายนอก)
-23. [สรุป](#สรุป)
+> Document version: v1.2  
+> Updated: August 1, 2026  
+> Author: AorAke  
+> Language: English (US)  
+> Use case: installation guide, teaching handout, workshop runbook, and operational reference  
+> Target audience: IT instructors, IT / CS / Software Engineering / Digital Business students, and beginners building AI-agent workflows  
+> Scope: macOS first; adaptable to Linux and WSL2  
+> Source basis: OpenClaw documentation, OpenRouter documentation, OpenRouter Free Models Router, and OpenRouter Quickstart
 
 ---
 
-## เป้าหมายของคู่มือนี้
+## Table of Contents
 
-คู่มือนี้ออกแบบเพื่อให้ผู้เรียนสามารถติดตั้งและใช้งาน **OpenClaw** ร่วมกับ **OpenRouter Free Model** ได้อย่างเป็นระบบ โดยเน้น 4 แกนหลัก:
-
-1. ติดตั้งและตรวจสอบ OpenClaw ให้พร้อมใช้งาน
-2. เชื่อมต่อ OpenRouter ด้วย OAuth หรือ API Key อย่างปลอดภัย
-3. ตั้งค่าโมเดลแบบ free-only ให้ลดความเสี่ยงเรื่องค่าใช้จ่าย
-4. นำไปใช้สอน Workshop, Lab และงาน Automation เบื้องต้นได้
-
-เมื่อเรียนจบ ผู้เรียนควรทำได้ดังนี้:
-
-- อธิบายสถาปัตยกรรม OpenClaw + OpenRouter ได้
-- แยกความแตกต่างระหว่าง OpenRouter model slug กับ OpenClaw model ref ได้
-- ติดตั้ง OpenClaw และเปิด Dashboard/Gateway ได้
-- เชื่อม OpenRouter ผ่าน OAuth หรือ API Key ได้
-- ตั้งค่า Free Model Router หรือ free variant ได้
-- ตรวจสอบ model/auth ด้วยคำสั่ง `openclaw models status`, `models list`, `models scan`, และ `models status --probe` ได้
-- สร้าง Cron Job แบบประหยัด token ได้
-- วางแนวปฏิบัติด้าน security, token hygiene, rate limit และ context overflow ได้
+1. [Purpose of This Manual](#purpose-of-this-manual)
+2. [What Changed in v1.2](#what-changed-in-v12)
+3. [Chapter 1: OpenClaw + OpenRouter Overview](#chapter-1-openclaw--openrouter-overview)
+4. [Chapter 2: Key Terms](#chapter-2-key-terms)
+5. [Chapter 3: Understanding OpenRouter Free Models](#chapter-3-understanding-openrouter-free-models)
+6. [Chapter 4: Preparing the Computer](#chapter-4-preparing-the-computer)
+7. [Chapter 5: Installing OpenClaw](#chapter-5-installing-openclaw)
+8. [Chapter 6: OpenRouter Onboarding](#chapter-6-openrouter-onboarding)
+9. [Chapter 7: Configuring Free Models in OpenClaw](#chapter-7-configuring-free-models-in-openclaw)
+10. [Chapter 8: Checking Model and Authentication Status](#chapter-8-checking-model-and-authentication-status)
+11. [Chapter 9: Configuring Web Search](#chapter-9-configuring-web-search)
+12. [Chapter 10: Creating a Cost-Safe Cron Job](#chapter-10-creating-a-cost-safe-cron-job)
+13. [Chapter 11: Working with Files and Workspaces](#chapter-11-working-with-files-and-workspaces)
+14. [Chapter 12: Telegram Recovery](#chapter-12-telegram-recovery)
+15. [Chapter 13: Cost Control and Rate Limits](#chapter-13-cost-control-and-rate-limits)
+16. [Chapter 14: Context Overflow Playbook](#chapter-14-context-overflow-playbook)
+17. [Chapter 15: Security and Token Hygiene](#chapter-15-security-and-token-hygiene)
+18. [Chapter 16: Troubleshooting](#chapter-16-troubleshooting)
+19. [Chapter 17: Instructor Workshop Plan](#chapter-17-instructor-workshop-plan)
+20. [Chapter 18: Student Assignment and Lab](#chapter-18-student-assignment-and-lab)
+21. [Chapter 19: Command Cheat Sheet](#chapter-19-command-cheat-sheet)
+22. [External References](#external-references)
+23. [Summary](#summary)
 
 ---
 
-## สิ่งที่ปรับปรุงใน v1.1
+## Purpose of This Manual
 
-เวอร์ชันนี้ปรับปรุงจากเอกสารเดิมโดยอ้างอิงแหล่งข้อมูลภายนอกล่าสุด และเพิ่มประเด็นที่เหมาะกับการใช้สอนจริงมากขึ้น ได้แก่:
+This manual helps learners install and operate **OpenClaw** with **OpenRouter Free Models** in a controlled, security-first, and cost-aware way.
 
-| ประเด็นใหม่ | เหตุผลที่เพิ่ม |
+The manual focuses on four practical goals:
+
+1. Install and verify OpenClaw.
+2. Connect OpenRouter using OAuth or an API key.
+3. Configure a free-only or cost-safe model strategy.
+4. Use the setup for workshops, labs, and lightweight automation.
+
+After completing this manual, learners should be able to:
+
+- Explain the OpenClaw + OpenRouter architecture.
+- Distinguish an OpenRouter model slug from an OpenClaw model ref.
+- Install OpenClaw and open the Dashboard/Gateway.
+- Connect OpenRouter through OAuth or an API key.
+- Configure a Free Model Router or a free model variant.
+- Check model and authentication status with `openclaw models status`, `models list`, `models scan`, and `models status --probe`.
+- Create a token-conscious Cron job.
+- Apply basic security, rate-limit, and context-overflow controls.
+
+---
+
+## What Changed in v1.2
+
+Version v1.2 converts the manual to English (US) and preserves the operational structure of the Thai version.
+
+| Improvement | Reason |
 |---|---|
-| OpenRouter OAuth onboarding | OpenClaw รองรับการ onboarding แบบ OAuth/PKCE สำหรับ OpenRouter |
-| OpenRouter API-key onboarding | ใช้ได้กับผู้เรียนที่ต้องการควบคุม key เอง |
-| แยก Direct API slug กับ OpenClaw model ref | ลดความสับสนระหว่าง `openrouter/free` และ `openrouter/openrouter/free` |
-| `openclaw models scan` | ใช้ตรวจ free-model catalog และความสามารถของ model |
-| Model ref pattern | OpenClaw ใช้รูปแบบ `provider/model`; กรณี OpenRouter ที่มี `/` ต้องใส่ provider prefix ให้ครบ |
-| Free Model Router behavior | `openrouter/free` เป็น router ที่สุ่ม/เลือกโมเดลฟรีและกรองตามความสามารถของคำขอ |
-| OpenRouter Quickstart / API compatibility | OpenRouter ใช้ endpoint แบบ OpenAI-compatible ได้ |
-| Workshop & Assignment | เพิ่มโครงสอนสำหรับวิทยากรและกิจกรรมให้นักศึกษา |
+| English (US) wording throughout | Makes the repository easier to share with IT instructors and international learners. |
+| Clear distinction between API slug and OpenClaw model ref | Reduces confusion around `openrouter/free`, `openrouter/auto`, and provider-qualified refs. |
+| Stronger instructor notes | Helps trainers explain concepts rather than only run commands. |
+| Security-first warnings | Reduces the risk of exposing API keys, Telegram tokens, and local config files. |
+| Cost-safe defaults | Helps learners avoid accidental paid-model usage during workshops. |
+| Simplified troubleshooting | Makes the manual usable as a practical runbook. |
 
 ---
 
-# บทที่ 1: ภาพรวม OpenClaw + OpenRouter
+# Chapter 1: OpenClaw + OpenRouter Overview
 
-## 1.1 OpenClaw คืออะไร
+## 1.1 What Is OpenClaw?
 
-**OpenClaw** คือระบบ AI Agent ที่ทำหน้าที่เป็น gateway ระหว่างผู้ใช้ ช่องทางสื่อสาร เครื่องมือ และ model provider หลายรูปแบบ
-
-โครงสร้างโดยย่อ:
+OpenClaw is an AI-agent gateway that runs on the user's machine or server. It can connect a user interface, an agent session, a model provider, and tools such as Web Search, local files, Cron, and messaging channels.
 
 ```text
-User / Student / Instructor
-        ↓
-Channel Layer
-- Dashboard
-- Telegram
-- CLI
+User / Telegram / Dashboard
         ↓
 OpenClaw Gateway
         ↓
 Agent Session
         ↓
-Model Provider Layer
-- OpenRouter
-- OpenAI
-- Anthropic
-- Gemini
-- Local Model
+Model Provider such as OpenRouter
         ↓
-Tool Layer
-- Web Search
-- Files
-- Cron
-- Automation
-- Local Workspace
-        ↓
-Output
-- Summary
-- Report
-- Chat Response
-- Action Items
-- Teaching Demo
+Tools / Files / Web / Cron / Logs
 ```
 
-## 1.2 OpenRouter คืออะไร
+## 1.2 What Is OpenRouter?
 
-**OpenRouter** คือบริการรวม model หลายค่ายไว้หลัง API เดียว โดยใช้ API key ของ OpenRouter หนึ่งตัวในการเรียกใช้งานโมเดลหลาย provider ได้ เช่น OpenAI-compatible model, open-weight model, reasoning model, coding model และ free model บางรายการ
+OpenRouter is a model-routing service that exposes many AI models behind a single API. Instead of creating separate keys for each model vendor, a user can access many model families through OpenRouter.
 
-จุดเด่นสำหรับการสอน:
+## 1.3 Why Use Free Models?
 
-- ใช้ API รูปแบบใกล้เคียง OpenAI Chat Completions
-- เหมาะกับการสาธิต model routing
-- สามารถสอนเรื่อง model selection, cost, rate limit และ provider fallback ได้ง่าย
-- มี free model / free router สำหรับการทดลองหรือ workshop เบื้องต้น
+Free models are useful for:
+
+- Teaching demonstrations
+- Basic prompt testing
+- Lightweight classification
+- Low-risk daily briefs
+- Introductory automation labs
+
+Free models are not ideal for:
+
+- Mission-critical production workloads
+- Highly sensitive data
+- Long-running high-volume tasks
+- Workloads that require guaranteed latency or availability
 
 ---
 
-# บทที่ 2: คำศัพท์สำคัญ
+# Chapter 2: Key Terms
 
-| คำศัพท์ | ความหมาย | ตัวอย่าง |
-|---|---|---|
-| Provider | ผู้ให้บริการ model | `openrouter`, `openai`, `anthropic` |
-| Model slug | ชื่อโมเดลในระบบ provider | `openrouter/free`, `google/gemini-*` |
-| OpenClaw model ref | รูปแบบที่ OpenClaw ใช้ระบุ provider/model | `openrouter/openrouter/free` |
-| Auth profile | โปรไฟล์ credential ที่ OpenClaw เก็บไว้ | `openrouter:default` |
-| Gateway | ตัวกลางที่รับคำสั่งและเรียก model/tools | OpenClaw Gateway |
-| Dashboard | UI สำหรับควบคุม/ตรวจระบบ | `http://127.0.0.1:18789` |
-| Cron Job | งานอัตโนมัติตามเวลา | Daily brief เวลา 08:00 |
-| Probe | การทดสอบว่า model ใช้งานได้จริง | `openclaw models status --probe` |
+| Term | Meaning |
+|---|---|
+| **Gateway** | The OpenClaw service that routes user requests to agents, models, and tools. |
+| **Dashboard** | A local web interface for viewing or controlling OpenClaw. |
+| **Provider** | A model service such as OpenRouter, OpenAI, Anthropic, Gemini, or a local endpoint. |
+| **Model slug** | A model identifier used by a provider, such as `qwen/qwen3.6-plus:free`. |
+| **Model ref** | A provider-qualified OpenClaw reference, such as `openrouter/qwen/qwen3.6-plus:free`. |
+| **Free Model Router** | A router that selects from free models based on availability and request requirements. |
+| **Cron job** | A scheduled automation task. |
+| **Context overflow** | A failure caused by prompt, history, tool input, or output budget exceeding the model context limit. |
 
-## 2.1 จุดที่ผู้เรียนมักสับสน
+### Instructor Note
 
-### Direct OpenRouter API
-
-เมื่อเรียก OpenRouter API โดยตรง จะใช้ model slug เช่น:
-
-```text
-openrouter/free
-```
-
-### OpenClaw Model Reference
-
-แต่ใน OpenClaw จะมี provider prefix ข้างหน้าอีกชั้นหนึ่ง เพราะ OpenClaw ต้องรู้ว่าจะส่งคำขอไปที่ provider ใด
-
-ดังนั้น free router ของ OpenRouter มักอ้างอิงใน OpenClaw ได้ในรูปแบบ:
-
-```text
-openrouter/openrouter/free
-```
-
-ถ้าระบบของผู้เรียนรองรับ alias เดิม อาจพบว่าใช้ได้ทั้ง:
-
-```text
-openrouter/free
-openrouter/openrouter/free
-```
-
-แนวทางสอนที่ปลอดภัยคือ:
-
-```bash
-openclaw models list --provider openrouter
-openclaw models scan
-```
-
-แล้วเลือก model ref ที่ปรากฏจริงในเครื่องของผู้เรียนก่อนตั้งค่า default
+Ask learners to explain why `qwen/qwen3.6-plus:free` and `openrouter/qwen/qwen3.6-plus:free` are not the same operational reference inside OpenClaw.
 
 ---
 
-# บทที่ 3: OpenRouter Free Model คืออะไร
+# Chapter 3: Understanding OpenRouter Free Models
 
-## 3.1 Free Models Router
+OpenRouter can expose free models in two common ways:
 
-OpenRouter มี router ชื่อ `openrouter/free` ซึ่งออกแบบเพื่อเลือก free model ที่พร้อมใช้งานจาก catalog ของ OpenRouter โดย router จะพิจารณาความสามารถที่คำขอต้องใช้ เช่น image understanding, tool calling หรือ structured outputs
+| Type | Example | Meaning | Best For |
+|---|---|---|---|
+| Free router | `openrouter/free` | OpenRouter chooses a free model that can handle the request. | Quick tests and teaching demos. |
+| Free model variant | `<provider>/<model-id>:free` | A specific model variant marked as free. | More controlled demos and repeatable labs. |
 
-เหมาะสำหรับ:
+## Important Limitations
 
-- ทดลองเรียนรู้ API
-- สอนแนวคิด model routing
-- demo งานเบา
-- สร้าง prototype แบบไม่เน้น production SLA
-- งานสรุปสั้น ๆ หรือ classification เบื้องต้น
+Free models may have:
 
-ไม่เหมาะสำหรับ:
+- Lower rate limits
+- Higher latency
+- Temporary unavailability
+- Changing context windows
+- Changing tool support
+- Provider-side changes without notice
 
-- งาน production ที่ต้องการเสถียรสูง
-- งานที่ต้องการคำตอบยาวมาก
-- งานที่ต้องใช้ context ใหญ่
-- งานที่ต้องการ latency ต่ำแน่นอน
-- งานที่มีข้อมูลลับหรือข้อมูลส่วนบุคคล หากยังไม่มีนโยบายกำกับชัดเจน
+## Free-Only Caution
 
-## 3.2 Free Variant Model
-
-บาง model มี suffix หรือ variant แบบ free เช่น:
-
-```text
-<provider>/<model>:free
-```
-
-ข้อดี:
-
-- คุม model ได้มากกว่า router
-- เหมาะกับ lab ที่ต้องการเปรียบเทียบ behavior ของ model เดียวกัน
-
-ข้อจำกัด:
-
-- อาจมี rate limit ต่ำ
-- อาจไม่พร้อมใช้งานบางช่วง
-- ความสามารถเรื่อง tools หรือ structured outputs อาจต่างกัน
-
-## 3.3 ข้อควรระวังเรื่อง `openrouter/auto`
-
-`openrouter/auto` เป็น automatic routing ที่สะดวก แต่ไม่ควรใช้เป็นค่า default หากเป้าหมายคือ **free-only** เพราะอาจ route ไปยัง model ที่มีค่าใช้จ่ายได้
-
-สำหรับ workshop ที่ต้องการควบคุมงบประมาณ ให้ใช้แนวทางนี้:
-
-```text
-Free-only lab        → openrouter/openrouter/free หรือ free variant ที่ตรวจแล้ว
-Paid/production demo → ใช้ model เฉพาะ พร้อมงบประมาณและ limit ชัดเจน
-```
+If strict free-only behavior is required, avoid ambiguous routing choices. Always verify the current catalog before a workshop.
 
 ---
 
-# บทที่ 4: เตรียมเครื่องก่อนติดตั้ง
+# Chapter 4: Preparing the Computer
 
-## 4.1 ตรวจระบบปฏิบัติการ
+## 4.1 Check macOS and Node.js
 
-macOS:
+Open Terminal and run:
 
 ```bash
 sw_vers
-```
-
-Linux / WSL2:
-
-```bash
-uname -a
-lsb_release -a 2>/dev/null || cat /etc/os-release
-```
-
-## 4.2 ตรวจ Node.js และ npm
-
-```bash
 node --version
 npm --version
 ```
 
-ค่าแนะนำสำหรับห้องเรียน:
+Recommended baseline:
 
 ```text
-Node.js LTS หรือใหม่กว่า
-npm พร้อมใช้งาน
-Terminal ใช้งานได้
-Internet ใช้งานได้
-Browser เปิดได้
+Use an active Node.js LTS version or the version recommended by the OpenClaw installer.
 ```
 
-macOS ติดตั้ง Node.js ผ่าน Homebrew:
+If Node.js is missing on macOS:
 
 ```bash
 brew install node
 ```
 
-ตรวจซ้ำ:
+Check again:
 
 ```bash
 node --version
 npm --version
+which node
+which npm
 ```
 
-## 4.3 เตรียม Account และ Key
+## 4.2 Classroom Preparation Checklist
 
-ผู้เรียนควรมี:
+Before class, the instructor should verify:
 
-- GitHub account ถ้าจะทำ lab repository
-- OpenRouter account
-- OpenRouter API key หรือเลือกใช้ OAuth onboarding
-- Telegram bot/chat id ถ้าจะสอน channel integration
-- Password manager สำหรับเก็บ API key
+- Internet access
+- Node.js availability
+- Browser access to the local Dashboard
+- OpenRouter account access
+- Test API key or safe demo key
+- No real secrets shown on slides
+- Backup command examples ready
 
 ---
 
-# บทที่ 5: ติดตั้ง OpenClaw
+# Chapter 5: Installing OpenClaw
 
-## 5.1 วิธีแนะนำ: Installer Script
+## 5.1 Recommended Method: Installer Script
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-หลังติดตั้ง ให้ตรวจสอบ:
+The installer may check system requirements, install required components, install OpenClaw, and begin onboarding.
+
+## 5.2 Alternative Method: npm
+
+Use this if Node.js and npm are already available:
+
+```bash
+npm install -g openclaw@latest
+openclaw onboard --install-daemon
+```
+
+## 5.3 Verify the Installation
 
 ```bash
 openclaw --version
@@ -312,326 +238,248 @@ openclaw doctor
 openclaw gateway status
 ```
 
-ผลที่คาดหวัง:
+Expected result:
 
 ```text
 Gateway: running
 Dashboard: http://127.0.0.1:18789/
-Connectivity: ok
+Connectivity probe: ok
 ```
 
-## 5.2 วิธีทางเลือก: npm
-
-ใช้เมื่อเครื่องมี Node.js และ npm พร้อมแล้ว
-
-```bash
-npm install -g openclaw@latest
-openclaw onboard --install-daemon
-```
-
-## 5.3 เปิด Dashboard
+## 5.4 Open the Dashboard
 
 ```bash
 openclaw dashboard
 ```
 
-หรือเปิดผ่าน browser:
+Or open the local URL:
 
 ```bash
 open http://127.0.0.1:18789
 ```
 
-Linux:
+---
 
-```bash
-xdg-open http://127.0.0.1:18789
+# Chapter 6: OpenRouter Onboarding
+
+## 6.1 Create an OpenRouter API Key
+
+1. Sign in to OpenRouter.
+2. Open the **API Keys** page.
+3. Create a new key.
+4. Give the key a clear name, such as `OpenClaw-Workshop-Free-Model`.
+5. Copy the key and store it in a password manager.
+
+Common key pattern:
+
+```text
+sk-or-v1-...
 ```
 
-## 5.4 Restart Gateway
+Do not confuse this with keys from other providers, such as:
 
-```bash
-openclaw gateway restart
+```text
+hf_...       # Hugging Face-style key
+sk-proj-...  # OpenAI-style project key
 ```
 
-> หมายเหตุ: ถ้าผู้เรียนใช้คำสั่ง `openclaw restart` แล้วไม่สำเร็จ ให้แก้เป็น `openclaw gateway restart`
+## 6.2 Authenticate OpenRouter in OpenClaw
+
+```bash
+openclaw models auth login --provider openrouter
+```
+
+Alternative onboarding method:
+
+```bash
+export OPENROUTER_API_KEY="<your-openrouter-api-key>"
+openclaw onboard --auth-choice apiKey --token-provider openrouter --token "$OPENROUTER_API_KEY"
+```
+
+## 6.3 Verify Authentication
+
+```bash
+openclaw models auth list
+openclaw models status
+openclaw models status --probe
+```
+
+### Instructor Warning
+
+Never type a real API key into a projected screen, shared terminal, public repository, or class chat.
 
 ---
 
-# บทที่ 6: Onboarding OpenRouter
+# Chapter 7: Configuring Free Models in OpenClaw
 
-OpenClaw รองรับการเชื่อม OpenRouter ได้ 2 แนวทางหลัก:
-
-1. OAuth onboarding
-2. API-key onboarding
-
-## 6.1 วิธีที่ 1: OAuth Onboarding
-
-เหมาะสำหรับผู้เรียนที่ต้องการ sign in ผ่าน browser โดยไม่ต้อง copy key เอง
-
-```bash
-openclaw onboard --auth-choice openrouter-oauth
-```
-
-สิ่งที่เกิดขึ้น:
-
-- OpenClaw เปิด browser เพื่อเข้าสู่ระบบ OpenRouter
-- ใช้ flow แบบ PKCE
-- ระบบแลก authorization code เป็น OpenRouter API key
-- OpenClaw เก็บผลลัพธ์ไว้ใน auth profile ของ OpenRouter
-
-กรณี server/headless:
-
-- OpenClaw แสดง sign-in URL
-- ผู้เรียนเปิด URL บนเครื่องที่มี browser
-- หลัง login ให้นำ redirect URL กลับมาวางใน terminal
-
-## 6.2 วิธีที่ 2: API-key Onboarding
-
-เหมาะสำหรับผู้สอนที่ต้องการควบคุม key เอง หรือใช้ใน lab ที่เตรียม key ไว้แล้ว
-
-ขั้นตอน:
-
-1. เข้า OpenRouter
-2. ไปที่ API Keys
-3. สร้าง key ใหม่
-4. เก็บ key ใน password manager
-5. รันคำสั่ง:
-
-```bash
-openclaw onboard --auth-choice openrouter-api-key
-```
-
-หรือใช้คำสั่ง auth โดยตรง:
-
-```bash
-openclaw models auth login --provider openrouter --method api-key
-```
-
-## 6.3 ตรวจ Auth Profiles
-
-```bash
-openclaw models auth list --provider openrouter
-```
-
-ถ้าต้องการ login ใหม่หรือ rotate key:
-
-```bash
-openclaw models auth login --provider openrouter --method oauth
-openclaw models auth login --provider openrouter --method api-key
-```
-
----
-
-# บทที่ 7: ตั้งค่า Free Model ใน OpenClaw
-
-## 7.1 ตรวจ model catalog ก่อน
-
-ก่อนตั้งค่า model ให้ตรวจ catalog เสมอ:
+## 7.1 List Available OpenRouter Models
 
 ```bash
 openclaw models list --provider openrouter
 ```
 
-ถ้าต้องการตรวจ free model catalog และความสามารถของ model:
+## 7.2 Scan Model Availability
 
 ```bash
 openclaw models scan
 ```
 
-คำสั่ง scan มีประโยชน์สำหรับผู้สอน เพราะช่วยให้เห็นว่า free model ใดพร้อมใช้งาน และรองรับ capability ใดบ้าง เช่น tool calling หรือ image support
+## 7.3 Choose a Free Model
 
-## 7.2 ตั้ง Free Models Router เป็น default
+Use the current model catalog instead of hardcoding a model permanently.
 
-ให้เริ่มจาก model ref ที่ OpenClaw รู้จักจริงจาก `models list` หรือ `models scan`
-
-รูปแบบที่แนะนำสำหรับ OpenClaw:
+Example pattern:
 
 ```bash
-openclaw models set openrouter/openrouter/free
+openclaw models set "openrouter/<provider>/<model-id>:free"
 ```
 
-ถ้าเครื่องหรือ build ของผู้เรียนยังใช้ alias เดิมและคำสั่งข้างต้นไม่ผ่าน ให้ลองตรวจรายการก่อนแล้วจึงใช้:
-
-```bash
-openclaw models set openrouter/free
-```
-
-## 7.3 ตั้ง fallback
+## 7.4 Set a Fallback
 
 ```bash
 openclaw models fallbacks clear
-openclaw models fallbacks add openrouter/openrouter/free
+openclaw models fallbacks add "openrouter/<provider>/<fallback-model-id>:free"
 ```
 
-ถ้า build ใช้ alias เดิม:
+## 7.5 Add an Alias
 
 ```bash
-openclaw models fallbacks clear
-openclaw models fallbacks add openrouter/free
-```
-
-## 7.4 ตั้ง alias สำหรับห้องเรียน
-
-```bash
-openclaw models aliases add or-free openrouter/openrouter/free
-```
-
-ตรวจ alias:
-
-```bash
+openclaw models aliases add or-free "openrouter/<provider>/<model-id>:free"
 openclaw models aliases list
 ```
 
-ใช้งาน alias:
-
-```bash
-openclaw models set or-free
-```
-
-## 7.5 Restart และ Probe
+## 7.6 Restart and Probe
 
 ```bash
 openclaw gateway restart
 openclaw models status --probe
 ```
 
-ผลที่คาดหวัง:
+### Safe Classroom Model Policy
+
+```text
+Use a verified free model.
+Use a verified free fallback.
+Keep output short.
+Minimize tool calls.
+Avoid full-PDF reading.
+Do not run Cron too frequently.
+```
+
+---
+
+# Chapter 8: Checking Model and Authentication Status
+
+Use these commands after any provider or model change:
+
+```bash
+openclaw models auth list
+openclaw models list --provider openrouter
+openclaw models status
+openclaw models status --probe
+```
+
+A good result should show:
 
 ```text
 Provider: openrouter
-Model: openrouter/openrouter/free หรือ alias ที่ตั้งไว้
+Auth: configured
+Primary model: configured
 Probe: ok
 ```
 
----
+If the probe fails, check:
 
-# บทที่ 8: ตรวจสอบ Model และ Auth
-
-## 8.1 ตรวจ default model
-
-```bash
-openclaw models status
-```
-
-## 8.2 ตรวจแบบ probe
-
-```bash
-openclaw models status --probe
-```
-
-## 8.3 ตรวจ provider catalog
-
-```bash
-openclaw models list --provider openrouter
-```
-
-## 8.4 Refresh catalog
-
-ถ้า catalog เก่า หรือเพิ่งเปลี่ยน provider/model:
-
-```bash
-openclaw models refresh
-openclaw gateway restart
-```
-
-## 8.5 ตรวจ config default model
-
-```bash
-openclaw config get agents.defaults.model --json
-```
-
-## 8.6 Troubleshooting จุดนี้
-
-| อาการ | สาเหตุที่เป็นไปได้ | วิธีตรวจ |
-|---|---|---|
-| `missing_credential` | ยังไม่มี key/auth profile | `models auth list --provider openrouter` |
-| `unresolved_ref` | model ref ไม่ถูกต้อง | `models list --provider openrouter` |
-| `no_model` | provider auth มี แต่หา model ไม่เจอ | `models refresh`, `models scan` |
-| probe fail | key, quota, network, model unavailable | ตรวจ OpenRouter dashboard และ logs |
+1. The API key.
+2. The provider name.
+3. The model ref.
+4. Gateway restart status.
+5. Rate-limit or billing messages.
 
 ---
 
-# บทที่ 9: ตั้งค่า Web Search
+# Chapter 9: Configuring Web Search
 
-ถ้า agent ต้องค้นข้อมูลล่าสุด ต้องตั้งค่า web provider ก่อน
+If Web Search is disabled:
+
+```text
+web_search is disabled or no provider is available
+```
+
+Configure the web section:
 
 ```bash
 openclaw configure --section web
-```
-
-หลังตั้งค่า:
-
-```bash
 openclaw gateway restart
 ```
 
-ตรวจด้วย prompt สั้น ๆ:
+| Provider | Strength | Best For |
+|---|---|---|
+| DuckDuckGo | Quick testing, usually no API key | Classroom demo |
+| Brave | API-based and more controlled | Practical workflows |
+| Gemini Search | Grounding and citations | Research workflows |
+| SearXNG | Self-hosted and privacy-oriented | Advanced users |
 
-```text
-ค้นข่าวเทคโนโลยี AI ล่าสุด 1 ข่าว พร้อมสรุป 3 บรรทัด และใส่แหล่งที่มา
-```
+### Teaching Point
 
-แนวทางเลือก provider:
+Students should distinguish:
 
-| Provider | เหมาะกับ |
-|---|---|
-| DuckDuckGo | Lab เร็ว ไม่เน้น API key |
-| Brave | ใช้งานจริงมากขึ้น |
-| Gemini Search | ต้องการ grounding/citation |
-| SearXNG | self-host/privacy |
+- Answering from model memory
+- Answering with web search
+- Answering with grounded/cited search results
 
 ---
 
-# บทที่ 10: สร้าง Cron Job แบบประหยัด
+# Chapter 10: Creating a Cost-Safe Cron Job
 
-## 10.1 หลักการออกแบบ Cron สำหรับ Free Model
+Cron jobs are powerful but can consume tokens repeatedly. Design them conservatively.
+
+## 10.1 Cost-Safe Design Rules
 
 ```text
-จำกัดหัวข้อ
-จำกัดจำนวนผลลัพธ์
-จำกัดความยาวคำตอบ
-หลีกเลี่ยง PDF ยาว
-หลีกเลี่ยง tool calls จำนวนมาก
-ให้ถามก่อนวิเคราะห์เชิงลึก
-ใช้ isolated session
+Limit the number of results.
+Limit answer length.
+Use isolated sessions.
+Use a verified cost-safe model.
+Do not read full large files.
+Do not create long tool chains.
 ```
 
-## 10.2 ตัวอย่าง Daily Ultra-light Brief
+## 10.2 Example Daily Brief
 
 ```bash
 MSG=$(cat <<'EOF'
-ทำ Daily AI Discovery แบบ Ultra-light
+Create a lightweight daily brief.
 
-เงื่อนไข:
-- ค้นเฉพาะรายการสำคัญใน 24 ชั่วโมงล่าสุด
-- จำกัดไม่เกิน 3 รายการ
-- สรุปเป็นภาษาไทย
-- ข่าวละไม่เกิน 4 บรรทัด
-- ห้ามอ่าน PDF เต็ม
-- ห้ามทำบทวิเคราะห์ยาว
-- ท้ายข้อความให้ถามว่า “ต้องการรายละเอียดข่าวใดเพิ่มเติมหรือไม่”
+Search only for important items from the last seven days.
+Limit the result to three items.
+Answer in English.
+Keep the response under 700 words.
+Do not read full PDFs.
+Do not produce long analysis.
+If no important item is found, say: "No major item met the criteria today."
 
-รูปแบบผลลัพธ์:
-1) สถานะรวม
-2) รายการสำคัญ
-3) ผลกระทบต่อผู้เรียน IT แบบสั้น
-4) แหล่งอ้างอิง
+Format:
+1) Overall status
+2) Key items
+3) Short impact notes
+4) Sources, if available
 EOF
 )
 
 openclaw cron add \
-  --name "daily-ai-ultra-light-brief" \
+  --name "daily-lightweight-brief" \
   --cron "0 8 * * *" \
   --tz "Asia/Bangkok" \
   --session isolated \
   --announce \
   --channel telegram \
   --to "<telegram-chat-id>" \
-  --model openrouter/openrouter/free \
+  --model "openrouter/<provider>/<model-id>:free" \
   --message "$MSG"
 ```
 
-## 10.3 ตรวจ Cron
+## 10.3 Check Cron Jobs
 
 ```bash
 openclaw cron list
@@ -639,38 +487,24 @@ openclaw cron run "<job-id>"
 openclaw cron runs --id "<job-id>"
 ```
 
-## 10.4 ปิด/เปิด Cron
-
-```bash
-openclaw cron disable "<job-id>"
-openclaw cron enable "<job-id>"
-```
-
-## 10.5 เปลี่ยน model ของ Cron
-
-```bash
-openclaw cron edit "<job-id>" --model openrouter/openrouter/free
-```
-
 ---
 
-# บทที่ 11: อ่านไฟล์ เขียนไฟล์ และ Workspace
+# Chapter 11: Working with Files and Workspaces
 
-## 11.1 หลักความปลอดภัยก่อนให้ Agent แก้ไฟล์
+## 11.1 Safe File Workflow
 
 ```text
-อ่านก่อน → ระบุ path ให้ชัด → backup → เขียนเฉพาะไฟล์ที่อนุญาต → ตรวจผลหลังแก้
+Read first → confirm path → back up before editing → write narrowly → verify result
 ```
 
-## 11.2 สร้าง workspace สำหรับ lab
+## 11.2 Create a Workspace
 
 ```bash
 mkdir -p "$HOME/AI-Agent-Lab/input"
 mkdir -p "$HOME/AI-Agent-Lab/output"
-mkdir -p "$HOME/AI-Agent-Lab/backup"
 ```
 
-## 11.3 อ่านไฟล์
+## 11.3 Read Files
 
 ```bash
 cat "$HOME/AI-Agent-Lab/input/sample.txt"
@@ -678,431 +512,288 @@ head -80 "$HOME/AI-Agent-Lab/input/sample.txt"
 tail -80 "$HOME/AI-Agent-Lab/input/sample.txt"
 ```
 
-## 11.4 ค้นหาในไฟล์
+## 11.4 Search Files
 
 ```bash
-grep -n "OpenRouter" "$HOME/AI-Agent-Lab/input/sample.txt"
-grep -Rni "model" "$HOME/AI-Agent-Lab/input"
+find "$HOME/AI-Agent-Lab" -maxdepth 3 -type f -print
+find "$HOME/AI-Agent-Lab" -maxdepth 3 -type f -name "*.md" -print
+grep -Rni "keyword" "$HOME/AI-Agent-Lab"
 ```
 
-## 11.5 เขียนไฟล์ Markdown
+## 11.5 Write a Markdown File
 
 ```bash
 cat <<'EOF' > "$HOME/AI-Agent-Lab/output/summary.md"
 # Summary
 
-- Topic: OpenClaw + OpenRouter
-- Result: System ready for basic lab
+This is a sample summary.
 EOF
 ```
 
-## 11.6 Backup ก่อนแก้ไฟล์
+## 11.6 Back Up Before Editing
 
 ```bash
 cp "$HOME/AI-Agent-Lab/output/summary.md" \
-   "$HOME/AI-Agent-Lab/backup/summary.backup.$(date +%Y%m%d-%H%M%S).md"
+   "$HOME/AI-Agent-Lab/output/summary.backup.$(date +%Y%m%d-%H%M%S).md"
 ```
 
 ---
 
-# บทที่ 12: Telegram Recovery
+# Chapter 12: Telegram Recovery
 
-ถ้าใช้งานผ่าน Telegram แล้ว session ค้าง ให้เริ่ม session ใหม่:
+If the Telegram session is stuck, start a new session:
 
 ```text
 /new
 ```
 
-ทดสอบสั้น ๆ:
+Then send a short test message:
 
 ```text
-ตรวจสถานะสั้น ๆ ว่าพร้อมใช้งานหรือไม่
+Check the system status briefly.
 ```
 
-ถ้ายังไม่ตอบ:
+If the problem continues:
 
 ```bash
 openclaw gateway status
-openclaw gateway restart
 openclaw models status --probe
-```
-
----
-
-# บทที่ 13: Cost Control และ Rate Limit
-
-## 13.1 หลักควบคุมต้นทุน
-
-| หลักการ | วิธีปฏิบัติ |
-|---|---|
-| ใช้ free-only | ใช้ `openrouter/openrouter/free` หรือ free variant ที่ตรวจแล้ว |
-| หลีกเลี่ยง auto paid routing | ไม่ใช้ `openrouter/auto` เป็นค่า default ใน lab free-only |
-| จำกัด prompt | ไม่ส่งเอกสารยาวทั้งหมดถ้าไม่จำเป็น |
-| จำกัด output | ระบุความยาว เช่น ไม่เกิน 500–900 คำ |
-| จำกัด tool calls | ไม่ให้ค้นหลายเว็บ/หลายไฟล์พร้อมกัน |
-| ตั้ง cron ไม่ถี่ | รายวัน/รายสัปดาห์ มากกว่ารายชั่วโมงใน free lab |
-
-## 13.2 ตัวอย่าง Prompt แบบประหยัด
-
-```text
-สรุปข้อความต่อไปนี้เป็นภาษาไทย
-- ไม่เกิน 300 คำ
-- แยกเป็น 5 bullet
-- ถ้าข้อมูลไม่พอ ให้บอกว่า “ข้อมูลไม่เพียงพอ”
-- ห้ามค้นเว็บเพิ่มเติม
-```
-
-## 13.3 Rate Limit Playbook
-
-ถ้าเจอ rate limit:
-
-```bash
-sleep 90
-openclaw models status --probe
-openclaw cron runs --id "<job-id>"
-```
-
-ปรับลด:
-
-```text
-ลดจำนวนข่าว
-ลดคำตอบ
-ลดความถี่ cron
-ลดจำนวน tool calls
-แยกงานใหญ่เป็นหลายรอบ
-```
-
----
-
-# บทที่ 14: Context Overflow Playbook
-
-Context overflow เกิดเมื่อ:
-
-```text
-prompt + chat history + file/tool input + expected output > context window
-```
-
-วิธีแก้:
-
-1. เริ่ม session ใหม่ด้วย `/new`
-2. ลด prompt
-3. ตัดเอกสารเป็นช่วง ๆ
-4. จำกัด output
-5. สรุปทีละส่วนก่อนรวม
-6. หลีกเลี่ยงการค้นหลายเว็บพร้อมกัน
-7. ใช้ workflow: Discovery → Extract → Analyze → Record
-
-ตัวอย่าง prompt ที่เหมาะกว่า:
-
-```text
-อ่านเฉพาะหัวข้อ 1-3 แล้วสรุปไม่เกิน 300 คำ
-ยังไม่ต้องวิเคราะห์เชิงลึก
-หลังสรุปให้ถามว่าต้องการอ่านหัวข้อถัดไปหรือไม่
-```
-
----
-
-# บทที่ 15: Security & Token Hygiene
-
-## 15.1 ห้ามเปิดเผยข้อมูลเหล่านี้
-
-```text
-OPENROUTER_API_KEY
-OPENAI_API_KEY
-Gateway token
-Telegram bot token
-Password
-Session token
-.env
-auth-profiles.json
-credential files
-```
-
-## 15.2 แนวปฏิบัติสำหรับห้องเรียน
-
-- ห้ามให้นักศึกษาส่ง API key ใน chat/public repo
-- ใช้ placeholder เช่น `<OPENROUTER_API_KEY>` เสมอ
-- ให้ผู้เรียนสร้าง key ของตนเอง
-- ใช้ password manager
-- ตั้ง spending limit ใน OpenRouter หากมี
-- ใช้ key แยกสำหรับ workshop
-- ลบ/rotate key หลังจบ workshop ถ้าจำเป็น
-
-## 15.3 ตรวจหาความเสี่ยงก่อน commit
-
-```bash
-grep -Rni "sk-or-" .
-grep -Rni "OPENROUTER_API_KEY" .
-grep -Rni "BOT_TOKEN" .
-```
-
-ถ้าเผลอ commit secret:
-
-1. revoke key ทันที
-2. สร้าง key ใหม่
-3. ลบ secret จากไฟล์
-4. พิจารณาทำ history cleanup หาก repo public
-
----
-
-# บทที่ 16: Troubleshooting
-
-| อาการ | สาเหตุที่เป็นไปได้ | วิธีแก้ |
-|---|---|---|
-| `401 Unauthorized` | API key ผิด/หมดอายุ | login ใหม่ / rotate key |
-| `402 Payment Required` | credit ไม่พอหรือ route ไป paid model | ใช้ free-only ref / เติม credit / ลด token |
-| `404 model not found` | model ref ไม่ตรง catalog | `models list --provider openrouter`, `models scan` |
-| `No allowed providers` | provider/model ไม่พร้อมหรือ policy ไม่อนุญาต | เปลี่ยน model / refresh catalog |
-| `missing_credential` | ไม่มี auth profile | `models auth login --provider openrouter --method api-key` |
-| `unresolved_ref` | รูปแบบ model ref ผิด | ใช้ `openrouter/<provider>/<model>` |
-| `rate limit` | เรียกถี่เกินหรือ free tier จำกัด | รอ / ลดความถี่ / ลด output |
-| `context overflow` | prompt หรือ input ใหญ่เกิน | ลด context / แยกงาน |
-| `web_search disabled` | ยังไม่ตั้ง web provider | `openclaw configure --section web` |
-| Telegram ค้าง | session ค้างหรือ gateway มีปัญหา | `/new`, restart gateway |
-
-## 16.1 Debug Commands
-
-```bash
-openclaw doctor
-openclaw gateway status
-openclaw gateway restart
-openclaw models status
-openclaw models status --probe
-openclaw models list --provider openrouter
-openclaw models scan
-openclaw models auth list --provider openrouter
-openclaw cron list
-openclaw logs --help
 openclaw logs --follow
 ```
 
 ---
 
-# บทที่ 17: Workshop สำหรับผู้สอน
+# Chapter 13: Cost Control and Rate Limits
 
-## 17.1 โครงเวลา 3 ชั่วโมง
+## 13.1 Cost Control Checklist
 
-| เวลา | กิจกรรม | ผลลัพธ์ |
-|---|---|---|
-| 0:00–0:20 | อธิบายภาพรวม AI Agent, OpenClaw, OpenRouter | ผู้เรียนเข้าใจ architecture |
-| 0:20–0:45 | เตรียมเครื่องและติดตั้ง OpenClaw | เปิด gateway/dashboard ได้ |
-| 0:45–1:15 | Onboarding OpenRouter | มี auth profile พร้อมใช้งาน |
-| 1:15–1:40 | ตั้ง free model และ probe | model ตอบได้ |
-| 1:40–2:10 | ทดลอง prompt และ web search | เห็น agent workflow |
-| 2:10–2:35 | สร้าง cron job แบบประหยัด | มี automation demo |
-| 2:35–2:50 | Security / token hygiene | เข้าใจความเสี่ยง |
-| 2:50–3:00 | Q&A / assignment briefing | ส่งงานต่อได้ |
+- Use a verified free model.
+- Use a free fallback model.
+- Limit answer length.
+- Avoid large full-document reads.
+- Avoid broad web searches.
+- Use isolated sessions for scheduled jobs.
+- Avoid high-frequency Cron jobs.
 
-## 17.2 Teaching Script แบบย่อ
+## 13.2 When a Rate Limit Appears
 
-```text
-วันนี้เราไม่ได้เรียนแค่การเรียก LLM แต่เรียนการจัดระบบ AI Agent ให้ทำงานจริงอย่างปลอดภัย
-OpenClaw คือ gateway และ runtime orchestration
-OpenRouter คือ model provider gateway ที่รวมโมเดลหลายค่ายไว้หลัง API เดียว
-หัวใจของ lab คือการเลือก model ให้ถูก ใช้ credential ให้ปลอดภัย และควบคุมต้นทุนให้ได้
-```
+If you see a rate-limit message:
 
-## 17.3 จุดเน้นสำหรับวิทยากร
+1. Wait before retrying.
+2. Reduce prompt size.
+3. Reduce output length.
+4. Switch to a fallback model.
+5. Avoid repeated manual retries.
 
-- ย้ำว่า free model ไม่เท่ากับ unlimited
-- ย้ำว่า API key คือความลับ
-- ย้ำว่า `openrouter/auto` ไม่ใช่ free-only guarantee
-- สอนให้ผู้เรียนตรวจ catalog ก่อนตั้งค่า model
-- ให้ผู้เรียนทำ lab ด้วย prompt สั้นก่อน
-- ห้ามใช้ข้อมูลจริงที่เป็นความลับในห้องเรียน
+Example wait command:
 
----
-
-# บทที่ 18: Assignment / Lab สำหรับนักศึกษา
-
-## Lab 1: ตรวจระบบและติดตั้ง
-
-ภารกิจ:
-
-1. ตรวจ Node.js/npm
-2. ติดตั้ง OpenClaw
-3. เปิด Dashboard
-4. ส่ง screenshot หรือ command output ที่ไม่มี secret
-
-ผลลัพธ์ที่ต้องส่ง:
-
-```text
-openclaw --version
-openclaw gateway status
-```
-
-## Lab 2: เชื่อม OpenRouter และตั้ง Free Model
-
-ภารกิจ:
-
-1. เชื่อม OpenRouter ด้วย OAuth หรือ API key
-2. ตรวจ auth profile
-3. list model provider
-4. ตั้ง free model
-5. probe
-
-ผลลัพธ์ที่ต้องส่ง:
-
-```text
-openclaw models auth list --provider openrouter
-openclaw models list --provider openrouter
+```bash
+sleep 90
 openclaw models status --probe
 ```
 
-> ห้ามส่ง API key ในรายงาน
+---
 
-## Lab 3: Prompt Design แบบประหยัด
+# Chapter 14: Context Overflow Playbook
 
-ให้ผู้เรียนออกแบบ prompt สำหรับงานใดงานหนึ่ง:
+Context overflow happens when the total input and expected output exceed a model's context window.
 
-- สรุปข่าว IT
-- สรุป lecture note
-- จัดหมวด ticket support
-- สร้าง checklist ตรวจระบบ
+Common causes:
 
-เงื่อนไข:
+- Long chat history
+- Full PDF or large file input
+- Multiple web pages
+- Excessive tool output
+- Too much requested output
+
+Recommended fixes:
 
 ```text
-ไม่เกิน 500 คำ
-ต้องมีข้อจำกัด output
-ต้องระบุว่าห้ามค้นเว็บถ้าไม่จำเป็น
-ต้องมี fallback phrase เช่น “ข้อมูลไม่เพียงพอ”
+Start a new session.
+Summarize first, then analyze.
+Split the task into smaller parts.
+Read only the necessary file section.
+Limit output length.
+Avoid unnecessary tool calls.
 ```
 
-## Lab 4: Cron Automation
+Telegram recovery:
 
-ให้สร้าง cron job ที่ทำงานวันละครั้ง และตอบไม่เกิน 700 คำ
-
-ตัวอย่างหัวข้อ:
-
-- Daily AI News Brief
-- Daily GitHub Learning Reminder
-- Weekly Study Summary
-
-## Rubric
-
-| เกณฑ์ | คะแนน |
-|---|---:|
-| ติดตั้งและตรวจระบบได้ | 20 |
-| ตั้ง OpenRouter และ model ได้ถูกต้อง | 25 |
-| ควบคุม security และไม่เปิดเผย secret | 20 |
-| Prompt มีข้อจำกัดชัดเจน | 15 |
-| Cron design ประหยัดและตรวจสอบได้ | 10 |
-| รายงานอ่านง่าย มีหลักฐาน command output | 10 |
+```text
+/new
+```
 
 ---
 
-# บทที่ 19: Command Cheat Sheet
+# Chapter 15: Security and Token Hygiene
 
-## System
+Never expose:
+
+```text
+API keys
+Gateway tokens
+Telegram bot tokens
+Passwords
+Session tokens
+.env files
+auth profiles
+openclaw.json files containing secrets
+```
+
+## 15.1 Safe Practices
+
+- Use a password manager.
+- Do not share secrets in chat.
+- Do not commit secrets to GitHub.
+- Rotate any potentially exposed key immediately.
+- Back up configuration before editing.
+- Review logs before sharing them.
+
+## 15.2 Back Up Configuration
 
 ```bash
+cp "$HOME/.openclaw/openclaw.json" \
+   "$HOME/.openclaw/openclaw.backup.$(date +%Y%m%d-%H%M%S).json"
+```
+
+## 15.3 Sanitize Logs Before Sharing
+
+Before sending logs to another person, remove:
+
+- API keys
+- Tokens
+- User IDs
+- Chat IDs
+- Local file paths containing sensitive names
+- Customer or student data
+
+---
+
+# Chapter 16: Troubleshooting
+
+| Symptom | Likely Cause | Recommended Fix |
+|---|---|---|
+| `401` or missing authentication | API key is missing or not loaded | Re-authenticate the provider and restart the gateway. |
+| Billing or credit error | Paid model selected or insufficient credit | Switch to a verified free model and reduce token use. |
+| `Unknown model` | Invalid or stale model ref | Run `openclaw models list --provider openrouter` and update the model ref. |
+| `web_search disabled` | Web provider not configured | Run `openclaw configure --section web`. |
+| Context overflow | Prompt, files, and history are too large | Use `/new`, reduce context, and split the task. |
+| Cron repeats too often | Schedule is too aggressive | Lower frequency and reduce output length. |
+| Telegram does not respond | Stuck session or gateway issue | Send `/new`, then check gateway and logs. |
+
+---
+
+# Chapter 17: Instructor Workshop Plan
+
+Suggested three-hour workshop:
+
+| Time | Activity | Instructor Goal |
+|---|---|---|
+| 0:00–0:15 | Course opening | Explain what learners will build. |
+| 0:15–0:35 | Architecture overview | Distinguish gateway, provider, model, and tool. |
+| 0:35–1:00 | Installation | Install and verify OpenClaw. |
+| 1:00–1:25 | OpenRouter onboarding | Authenticate OpenRouter safely. |
+| 1:25–1:50 | Model configuration | Set and probe a free model. |
+| 1:50–2:15 | Dashboard or Telegram demo | Show a real agent interaction. |
+| 2:15–2:40 | Cron automation | Create a lightweight scheduled task. |
+| 2:40–2:55 | Troubleshooting | Review common errors. |
+| 2:55–3:00 | Wrap-up | Reinforce security and cost control. |
+
+---
+
+# Chapter 18: Student Assignment and Lab
+
+## Lab 1: Architecture Diagram
+
+Draw the OpenClaw + OpenRouter workflow and label:
+
+- User interface
+- Gateway
+- Agent session
+- Model provider
+- Tool layer
+- Output
+
+## Lab 2: Safe Model Strategy
+
+Write a model strategy for a classroom demo:
+
+```text
+Primary model:
+Fallback model:
+Output limit:
+Tool-call limit:
+Safety notes:
+```
+
+## Lab 3: Cost-Safe Prompt
+
+Create a prompt that asks the agent to produce a daily brief under 500 words without reading full PDFs.
+
+## Lab 4: Troubleshooting Scenario
+
+Given this error:
+
+```text
+Unknown model
+```
+
+Students must propose at least three checks and one corrective command.
+
+---
+
+# Chapter 19: Command Cheat Sheet
+
+```bash
+# System
 openclaw --version
 openclaw doctor
 openclaw gateway status
 openclaw gateway restart
 openclaw dashboard
-```
 
-## OpenRouter Auth
-
-```bash
-openclaw onboard --auth-choice openrouter-oauth
-openclaw onboard --auth-choice openrouter-api-key
-openclaw models auth login --provider openrouter --method oauth
-openclaw models auth login --provider openrouter --method api-key
-openclaw models auth list --provider openrouter
-```
-
-## Models
-
-```bash
+# Models
+openclaw models auth login --provider openrouter
+openclaw models auth list
+openclaw models list --provider openrouter
+openclaw models scan
 openclaw models status
 openclaw models status --probe
-openclaw models list --provider openrouter
-openclaw models refresh
-openclaw models scan
-openclaw models set openrouter/openrouter/free
-openclaw models aliases add or-free openrouter/openrouter/free
-openclaw models aliases list
+openclaw models set "openrouter/<provider>/<model-id>:free"
 openclaw models fallbacks clear
-openclaw models fallbacks add openrouter/openrouter/free
-```
+openclaw models fallbacks add "openrouter/<provider>/<model-id>:free"
+openclaw models aliases list
 
-## Web Search
-
-```bash
+# Web Search
 openclaw configure --section web
 openclaw gateway restart
-```
 
-## Cron
-
-```bash
+# Cron
 openclaw cron list
 openclaw cron run "<job-id>"
 openclaw cron runs --id "<job-id>"
 openclaw cron disable "<job-id>"
 openclaw cron enable "<job-id>"
-openclaw cron edit "<job-id>" --model openrouter/openrouter/free
-```
 
-## Logs
-
-```bash
+# Logs
 openclaw logs --help
 openclaw logs --follow
 ```
 
 ---
 
-## แหล่งข้อมูลภายนอก
+## External References
 
-เอกสารนี้ปรับปรุงโดยอ้างอิงแหล่งข้อมูลหลักต่อไปนี้:
-
-1. OpenClaw Models CLI  
-   https://docs.openclaw.ai/cli/models
-
-2. OpenClaw Model Providers  
-   https://docs.openclaw.ai/concepts/model-providers
-
-3. OpenClaw OpenRouter Provider  
-   https://docs.openclaw.ai/openrouter
-
-4. OpenRouter Quickstart  
-   https://openrouter.ai/docs/quickstart
-
-5. OpenRouter Free Models Router  
-   https://openrouter.ai/openrouter/free
-
-6. OpenRouter Models Catalog  
-   https://openrouter.ai/models
+- OpenClaw documentation: https://docs.openclaw.ai/
+- OpenClaw Models CLI: https://docs.openclaw.ai/cli/models
+- OpenClaw model providers: https://docs.openclaw.ai/concepts/model-providers
+- OpenRouter documentation: https://openrouter.ai/docs
+- OpenRouter Quickstart: https://openrouter.ai/docs/quickstart
+- OpenRouter model catalog: https://openrouter.ai/models
+- OpenRouter Free Models Router: https://openrouter.ai/openrouter/free
 
 ---
 
-## สรุป
+## Summary
 
-OpenClaw + OpenRouter Free Model เหมาะสำหรับการเรียนรู้และสาธิตการสร้าง AI Agent ในระดับ practical workshop เพราะช่วยให้ผู้เรียนเห็นภาพครบตั้งแต่การติดตั้ง การตั้งค่า provider/model การเชื่อม auth การทดสอบ model การสร้าง cron automation และการจัดการความเสี่ยงด้าน token/cost
-
-ค่าที่แนะนำสำหรับ lab แบบ free-only:
-
-```text
-Provider            = openrouter
-Direct API slug      = openrouter/free
-OpenClaw model ref   = openrouter/openrouter/free
-Alias แนะนำ          = or-free
-Cron frequency       = รายวันหรือรายสัปดาห์
-Output limit         = 500–900 คำ
-Security rule        = ห้ามเปิดเผย API key ทุกกรณี
-```
-
-แนวคิดสำคัญที่สุด:
-
-```text
-ตรวจ catalog ก่อนตั้ง model
-ใช้ free-only ref เมื่อต้องการควบคุมค่าใช้จ่าย
-จำกัด prompt/output/tool calls
-backup ก่อนให้ agent เขียนไฟล์
-ไม่เปิดเผย secret
-ใช้ /new หรือ restart gateway เมื่อติด session
-```
+This manual provides a classroom-ready and operations-ready path for using OpenClaw with OpenRouter Free Models. It emphasizes practical setup, verified model references, security, cost control, and repeatable workshops.
