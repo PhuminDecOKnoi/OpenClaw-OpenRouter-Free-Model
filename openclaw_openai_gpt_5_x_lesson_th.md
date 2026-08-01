@@ -1,6 +1,7 @@
 # Lesson Plan: OpenClaw + OpenAI GPT-5.x for IT Instructors
 
-> This English (US) lesson plan is designed for experienced IT instructors who need to teach university students how to understand, configure, and demonstrate OpenClaw with OpenAI GPT-5.x and OpenRouter as an optional routing layer.
+> This English (US) lesson plan is designed for experienced IT instructors who need to teach university students how to understand, configure, and demonstrate OpenClaw with OpenAI GPT-5.x and OpenRouter as an optional routing layer.  
+> Code examples use explicit GitHub Markdown syntax-highlight language tags and normal Thai `#` teaching comments for classroom explanation.
 
 ---
 
@@ -9,7 +10,7 @@
 | Item | Description |
 |---|---|
 | Lesson title | OpenClaw + OpenAI GPT-5.x for Practical AI-Agent Operation |
-| Language | English (US) |
+| Language | English (US), with Thai inline teaching comments in code blocks |
 | Target learners | IT, CS, Software Engineering, Digital Business, and AI-application students |
 | Instructor profile | Experienced IT trainer familiar with APIs, CLI, web applications, automation, or AI tools |
 | Suggested duration | 2.5–3 hours, or two class sessions |
@@ -54,42 +55,26 @@ OpenRouter can be introduced as an optional routing layer that allows the same t
 
 ## 3. Concept Map: OpenClaw + OpenAI + OpenRouter
 
-```text
-Student / User
-   ↓
-Interface Layer
-- Telegram
-- Dashboard
-- CLI
-   ↓
-OpenClaw Gateway
-   ↓
-Agent Session
-   ↓
-Model Provider Layer
-- OpenAI GPT-5.x
-- OpenRouter
-- Other providers
-   ↓
-Tool Layer
-- Web Search
-- File Search
-- Function Calling
-- Cron / Automation
-- Local Files
-   ↓
-Output
-- Summary
-- Report
-- Action Item
-- Teaching Demo
+```mermaid
+flowchart TD
+    U[Student / User] --> I[Interface Layer: Telegram / Dashboard / CLI]
+    I --> G[OpenClaw Gateway]
+    G --> S[Agent Session]
+    S --> M[Model Provider Layer]
+    M --> OAI[OpenAI GPT-5.x]
+    M --> OR[OpenRouter]
+    S --> T[Tool Layer: Web Search / File Search / Function Calling / Cron / Local Files]
+    OAI --> OUT[Output: Summary / Report / Action Item / Teaching Demo]
+    OR --> OUT
+    T --> OUT
 ```
 
 ### Instructor Note
 
 Start by asking students this question:
 
-```text
+```markdown
+# คำถามนี้ช่วยแยกความเข้าใจระหว่าง model กับระบบ agent รอบ ๆ model
 If GPT is the model, what parts of the system are not the model?
 ```
 
@@ -158,6 +143,7 @@ Recommended sequence:
 ### 7.1 Install or Verify OpenClaw
 
 ```bash
+# ตรวจเวอร์ชันและสุขภาพระบบก่อนสอน เพื่อให้รู้ว่าเครื่องพร้อมใช้หรือไม่
 openclaw --version
 openclaw doctor
 openclaw gateway status
@@ -166,19 +152,24 @@ openclaw gateway status
 If installation is needed:
 
 ```bash
+# ติดตั้ง OpenClaw แบบ global ผ่าน npm สำหรับเครื่องที่มี Node.js พร้อมแล้ว
 npm install -g openclaw@latest
+
+# onboarding พร้อม daemon ช่วยให้ gateway ทำงานเป็นบริการเบื้องหลัง
 openclaw onboard --install-daemon
 ```
 
 ### 7.2 Open the Dashboard
 
 ```bash
+# เปิด Dashboard เพื่อแสดงสถานะระบบผ่าน UI ให้ผู้เรียนเห็นภาพรวม
 openclaw dashboard
 ```
 
 Or open:
 
 ```bash
+# เปิด Dashboard ด้วย local URL โดยตรงบน macOS หาก command dashboard ไม่เปิด browser อัตโนมัติ
 open http://127.0.0.1:18789
 ```
 
@@ -187,22 +178,36 @@ open http://127.0.0.1:18789
 OpenAI example:
 
 ```bash
+# login provider OpenAI เพื่อใช้โมเดลตระกูล GPT ผ่าน OpenClaw
 openclaw models auth login --provider openai
 ```
 
 OpenRouter example:
 
 ```bash
+# login provider OpenRouter เพื่อให้ OpenClaw route ไปยังโมเดลผ่าน OpenRouter ได้
 openclaw models auth login --provider openrouter
 ```
 
 ### 7.4 Check Model Status
 
 ```bash
+# ตรวจสถานะ model และ probe เพื่อยืนยันว่าเรียก provider ได้จริง
 openclaw models status
 openclaw models status --probe
+
+# list model แยกตาม provider เพื่อสอนเรื่อง provider-qualified model refs
 openclaw models list --provider openai
 openclaw models list --provider openrouter
+```
+
+Expected readiness output:
+
+```console
+# ตัวอย่างผลลัพธ์ที่ควรเห็นก่อนเริ่ม demo
+Gateway: running
+Provider auth: configured
+Probe: ok
 ```
 
 ---
@@ -223,7 +228,8 @@ openclaw models list --provider openrouter
 
 For public classroom demos:
 
-```text
+```markdown
+# กฎนี้ใช้ป้องกันความเสี่ยงด้านข้อมูลลับ ค่าใช้จ่าย และการใช้ context เกินจำเป็น
 Use test accounts.
 Use demo keys only.
 Keep outputs short.
@@ -238,7 +244,8 @@ Use verified model refs.
 
 Use this prompt structure for labs:
 
-```text
+```markdown
+# โครง prompt นี้ช่วยให้ผู้เรียนระบุบทบาท งาน input ข้อจำกัด และรูปแบบผลลัพธ์ได้ชัดเจน
 Role:
 You are ...
 
@@ -260,7 +267,8 @@ Use headings and bullet points.
 
 ### Example Prompt
 
-```text
+```markdown
+# prompt ตัวอย่างนี้ใช้สอนความแตกต่างระหว่าง AI model กับ AI agent gateway แบบไม่ใช้ web search
 Role:
 You are a teaching assistant for an IT course.
 
@@ -283,20 +291,23 @@ Bullet points only.
 
 ### Step 1: Simple Prompt
 
-```text
+```markdown
+# เริ่มจาก prompt สั้นเพื่อให้เห็น baseline answer ก่อนเพิ่มข้อจำกัด
 Explain what OpenClaw does in five bullet points.
 ```
 
 ### Step 2: Constrained Prompt
 
-```text
+```markdown
+# เพิ่ม audience และข้อห้าม เพื่อให้ผลลัพธ์เหมาะกับผู้เรียนปี 1 มากขึ้น
 Explain what OpenClaw does in five bullet points for first-year IT students.
 Avoid marketing language.
 ```
 
 ### Step 3: Tool-Aware Prompt
 
-```text
+```markdown
+# prompt นี้สอนให้ agent ตรวจสถานะระบบก่อนสรุป readiness สำหรับ demo
 Check the latest configured model status first.
 Then explain whether the system is ready for a classroom demo.
 Keep the answer concise.
@@ -304,7 +315,8 @@ Keep the answer concise.
 
 ### Step 4: Scheduled Workflow Prompt
 
-```text
+```markdown
+# prompt นี้ใช้สอนแนวคิด automation และ cost control ก่อนตั้ง cron จริง
 Create a daily 8:00 AM brief.
 Use a lightweight model.
 Limit the response to three items.
@@ -396,7 +408,8 @@ Write a prompt for a daily brief that:
 
 ### Scenario A
 
-```text
+```console
+# error นี้ใช้ฝึกตรวจ model ref, provider และ catalog ปัจจุบัน
 Error: Unknown model
 ```
 
@@ -410,7 +423,8 @@ Expected checks:
 
 ### Scenario B
 
-```text
+```console
+# error นี้ใช้ฝึกตรวจ provider auth และ environment/config ที่เกี่ยวข้อง
 Error: Missing authentication
 ```
 
@@ -424,7 +438,8 @@ Expected checks:
 
 ### Scenario C
 
-```text
+```console
+# error นี้ใช้สอนการลด prompt/history/tool output เมื่อ context ใหญ่เกินไป
 Context overflow
 ```
 
@@ -444,7 +459,8 @@ Security should be taught as a required part of AI-agent operation, not as an op
 
 ### Never Share
 
-```text
+```markdown
+# รายการนี้คือข้อมูลลับหรือข้อมูลอ่อนไหว ห้ามแสดงบนจอ ห้าม commit และห้ามส่งใน chat สาธารณะ
 API keys
 Gateway tokens
 Telegram bot tokens
@@ -468,7 +484,8 @@ Logs containing secrets
 
 Show a fake key pattern only:
 
-```text
+```console
+# ตัวอย่าง key ปลอมสำหรับ slide/demo เท่านั้น ไม่ใช่ key จริง
 sk-or-v1-REDACTED_EXAMPLE_ONLY
 ```
 
@@ -492,7 +509,8 @@ Cost control is part of responsible AI operations.
 
 ### Cost-Safe Classroom Defaults
 
-```text
+```markdown
+# ค่า default นี้ช่วยลดความเสี่ยงค่าใช้จ่ายระหว่าง workshop และ lab
 Output length: short
 Tool calls: minimal
 Cron frequency: low
