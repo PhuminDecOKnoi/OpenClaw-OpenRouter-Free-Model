@@ -1,6 +1,7 @@
 # Lesson Plan: OpenClaw + OpenAI GPT-5.x for IT Instructors
 
-> This English (US) lesson plan is designed for experienced IT instructors who need to teach university students how to understand, configure, and demonstrate OpenClaw with OpenAI GPT-5.x and OpenRouter as an optional routing layer.
+> This English (US) lesson plan is designed for experienced IT instructors who need to teach university students how to understand, configure, and demonstrate OpenClaw with OpenAI GPT-5.x and OpenRouter as an optional routing layer.  
+> Code examples use explicit syntax-highlight language tags and Thai `# XXX:` teaching comments for classroom explanation.
 
 ---
 
@@ -9,7 +10,7 @@
 | Item | Description |
 |---|---|
 | Lesson title | OpenClaw + OpenAI GPT-5.x for Practical AI-Agent Operation |
-| Language | English (US) |
+| Language | English (US), with Thai inline teaching comments in code blocks |
 | Target learners | IT, CS, Software Engineering, Digital Business, and AI-application students |
 | Instructor profile | Experienced IT trainer familiar with APIs, CLI, web applications, automation, or AI tools |
 | Suggested duration | 2.5–3 hours, or two class sessions |
@@ -55,6 +56,7 @@ OpenRouter can be introduced as an optional routing layer that allows the same t
 ## 3. Concept Map: OpenClaw + OpenAI + OpenRouter
 
 ```text
+# XXX: แผนภาพนี้ใช้เปิดบทเรียน เพื่อให้ผู้เรียนเห็นว่า agent workflow มีหลายชั้น ไม่ใช่มีแค่ model
 Student / User
    ↓
 Interface Layer
@@ -90,6 +92,7 @@ Output
 Start by asking students this question:
 
 ```text
+# XXX: คำถามนี้ช่วยแยกความเข้าใจระหว่าง model กับระบบ agent รอบ ๆ model
 If GPT is the model, what parts of the system are not the model?
 ```
 
@@ -158,6 +161,7 @@ Recommended sequence:
 ### 7.1 Install or Verify OpenClaw
 
 ```bash
+# XXX: ตรวจเวอร์ชันและสุขภาพระบบก่อนสอน เพื่อให้รู้ว่าเครื่องพร้อมใช้หรือไม่
 openclaw --version
 openclaw doctor
 openclaw gateway status
@@ -166,19 +170,24 @@ openclaw gateway status
 If installation is needed:
 
 ```bash
+# XXX: ติดตั้ง OpenClaw แบบ global ผ่าน npm สำหรับเครื่องที่มี Node.js พร้อมแล้ว
 npm install -g openclaw@latest
+
+# XXX: onboarding พร้อม daemon ช่วยให้ gateway ทำงานเป็นบริการเบื้องหลัง
 openclaw onboard --install-daemon
 ```
 
 ### 7.2 Open the Dashboard
 
 ```bash
+# XXX: เปิด Dashboard เพื่อแสดงสถานะระบบผ่าน UI ให้ผู้เรียนเห็นภาพรวม
 openclaw dashboard
 ```
 
 Or open:
 
 ```bash
+# XXX: เปิด Dashboard ด้วย local URL โดยตรงบน macOS หาก command dashboard ไม่เปิด browser อัตโนมัติ
 open http://127.0.0.1:18789
 ```
 
@@ -187,20 +196,25 @@ open http://127.0.0.1:18789
 OpenAI example:
 
 ```bash
+# XXX: login provider OpenAI เพื่อใช้โมเดลตระกูล GPT ผ่าน OpenClaw
 openclaw models auth login --provider openai
 ```
 
 OpenRouter example:
 
 ```bash
+# XXX: login provider OpenRouter เพื่อให้ OpenClaw route ไปยังโมเดลผ่าน OpenRouter ได้
 openclaw models auth login --provider openrouter
 ```
 
 ### 7.4 Check Model Status
 
 ```bash
+# XXX: ตรวจสถานะ model และ probe เพื่อยืนยันว่าเรียก provider ได้จริง
 openclaw models status
 openclaw models status --probe
+
+# XXX: list model แยกตาม provider เพื่อสอนเรื่อง provider-qualified model refs
 openclaw models list --provider openai
 openclaw models list --provider openrouter
 ```
@@ -224,6 +238,7 @@ openclaw models list --provider openrouter
 For public classroom demos:
 
 ```text
+# XXX: กฎนี้ใช้ป้องกันความเสี่ยงด้านข้อมูลลับ ค่าใช้จ่าย และการใช้ context เกินจำเป็น
 Use test accounts.
 Use demo keys only.
 Keep outputs short.
@@ -239,6 +254,7 @@ Use verified model refs.
 Use this prompt structure for labs:
 
 ```text
+# XXX: โครง prompt นี้ช่วยให้ผู้เรียนระบุบทบาท งาน input ข้อจำกัด และรูปแบบผลลัพธ์ได้ชัดเจน
 Role:
 You are ...
 
@@ -261,6 +277,7 @@ Use headings and bullet points.
 ### Example Prompt
 
 ```text
+# XXX: prompt ตัวอย่างนี้ใช้สอนความแตกต่างระหว่าง AI model กับ AI agent gateway แบบไม่ใช้ web search
 Role:
 You are a teaching assistant for an IT course.
 
@@ -284,12 +301,14 @@ Bullet points only.
 ### Step 1: Simple Prompt
 
 ```text
+# XXX: เริ่มจาก prompt สั้นเพื่อให้เห็น baseline answer ก่อนเพิ่มข้อจำกัด
 Explain what OpenClaw does in five bullet points.
 ```
 
 ### Step 2: Constrained Prompt
 
 ```text
+# XXX: เพิ่ม audience และข้อห้าม เพื่อให้ผลลัพธ์เหมาะกับผู้เรียนปี 1 มากขึ้น
 Explain what OpenClaw does in five bullet points for first-year IT students.
 Avoid marketing language.
 ```
@@ -297,6 +316,7 @@ Avoid marketing language.
 ### Step 3: Tool-Aware Prompt
 
 ```text
+# XXX: prompt นี้สอนให้ agent ตรวจสถานะระบบก่อนสรุป readiness สำหรับ demo
 Check the latest configured model status first.
 Then explain whether the system is ready for a classroom demo.
 Keep the answer concise.
@@ -305,6 +325,7 @@ Keep the answer concise.
 ### Step 4: Scheduled Workflow Prompt
 
 ```text
+# XXX: prompt นี้ใช้สอนแนวคิด automation และ cost control ก่อนตั้ง cron จริง
 Create a daily 8:00 AM brief.
 Use a lightweight model.
 Limit the response to three items.
@@ -397,6 +418,7 @@ Write a prompt for a daily brief that:
 ### Scenario A
 
 ```text
+# XXX: error นี้ใช้ฝึกตรวจ model ref, provider และ catalog ปัจจุบัน
 Error: Unknown model
 ```
 
@@ -411,6 +433,7 @@ Expected checks:
 ### Scenario B
 
 ```text
+# XXX: error นี้ใช้ฝึกตรวจ provider auth และ environment/config ที่เกี่ยวข้อง
 Error: Missing authentication
 ```
 
@@ -425,6 +448,7 @@ Expected checks:
 ### Scenario C
 
 ```text
+# XXX: error นี้ใช้สอนการลด prompt/history/tool output เมื่อ context ใหญ่เกินไป
 Context overflow
 ```
 
@@ -445,6 +469,7 @@ Security should be taught as a required part of AI-agent operation, not as an op
 ### Never Share
 
 ```text
+# XXX: รายการนี้คือข้อมูลลับหรือข้อมูลอ่อนไหว ห้ามแสดงบนจอ ห้าม commit และห้ามส่งใน chat สาธารณะ
 API keys
 Gateway tokens
 Telegram bot tokens
@@ -469,6 +494,7 @@ Logs containing secrets
 Show a fake key pattern only:
 
 ```text
+# XXX: ตัวอย่าง key ปลอมสำหรับ slide/demo เท่านั้น ไม่ใช่ key จริง
 sk-or-v1-REDACTED_EXAMPLE_ONLY
 ```
 
@@ -493,6 +519,7 @@ Cost control is part of responsible AI operations.
 ### Cost-Safe Classroom Defaults
 
 ```text
+# XXX: ค่า default นี้ช่วยลดความเสี่ยงค่าใช้จ่ายระหว่าง workshop และ lab
 Output length: short
 Tool calls: minimal
 Cron frequency: low
