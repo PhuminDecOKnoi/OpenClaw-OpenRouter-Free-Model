@@ -1,45 +1,54 @@
-# บทเรียน: OpenClaw + OpenAI GPT-5.x สำหรับวิทยากรไอที
+# Lesson Plan: OpenClaw + OpenAI GPT-5.x for IT Instructors
 
-> เอกสารนี้ออกแบบเป็นบทเรียนภาษาไทยสำหรับ **วิทยากรด้านไอทีที่มีประสบการณ์** เพื่อใช้นำเสนอแก่นิสิต/นักศึกษา โดยเน้นการเข้าใจภาพรวมระบบ AI Agent, การเชื่อมต่อ OpenClaw กับ OpenAI GPT-5.x, การใช้ OpenRouter เป็นทางเลือก, การออกแบบ prompt, การจัดการเครื่องมือ, ความปลอดภัย และการควบคุมต้นทุน
+> This English (US) lesson plan is designed for experienced IT instructors who need to teach university students how to understand, configure, and demonstrate OpenClaw with OpenAI GPT-5.x and OpenRouter as an optional routing layer.
 
 ---
 
 ## 0. Metadata
 
-| รายการ | รายละเอียด |
+| Item | Description |
 |---|---|
-| ชื่อบทเรียน | OpenClaw + OpenAI GPT-5.x for Practical AI Agent Operation |
-| กลุ่มเป้าหมาย | นิสิต/นักศึกษาด้าน IT, CS, Software Engineering, Digital Business, AI Application |
-| ผู้สอน | วิทยากรด้านไอทีที่มีประสบการณ์ด้าน API, CLI, Web App, Automation หรือ AI Tools |
-| ระยะเวลาแนะนำ | 2.5–3 ชั่วโมง หรือแบ่งเป็น 2 คาบเรียน |
-| รูปแบบ | Lecture + Demo + Lab + Discussion |
-| ภาษา | ไทย พร้อมศัพท์เทคนิคภาษาอังกฤษ |
-| ระดับ | Intermediate to Advanced Beginner |
-| อัปเดตจากแหล่งข้อมูล | 1 สิงหาคม 2026 |
+| Lesson title | OpenClaw + OpenAI GPT-5.x for Practical AI-Agent Operation |
+| Language | English (US) |
+| Target learners | IT, CS, Software Engineering, Digital Business, and AI-application students |
+| Instructor profile | Experienced IT trainer familiar with APIs, CLI, web applications, automation, or AI tools |
+| Suggested duration | 2.5–3 hours, or two class sessions |
+| Format | Lecture + demo + lab + discussion |
+| Level | Intermediate to advanced beginner |
+| Updated | August 1, 2026 |
 
 ---
 
-## 1. วัตถุประสงค์การเรียนรู้
+## 1. Learning Objectives
 
-เมื่อเรียนจบบทนี้ ผู้เรียนควรสามารถ:
+By the end of this lesson, learners should be able to:
 
-1. อธิบายสถาปัตยกรรมของ OpenClaw ในฐานะ AI Agent Gateway ได้
-2. แยกความแตกต่างระหว่าง Model Provider, Model Ref, Runtime, Tool และ Channel ได้
-3. ตั้งค่า OpenClaw ให้เชื่อมต่อ OpenAI หรือ OpenRouter ในระดับ concept ได้
-4. เลือกใช้ GPT-5.x model ตามงาน เช่น reasoning, coding, cost-sensitive workload และ automation ได้
-5. ออกแบบ Prompt Pattern สำหรับงานสรุป ค้นเว็บ อ่านไฟล์ และจัดหมวดข้อมูลได้
-6. อธิบายความเสี่ยงด้าน API Key, token, cost, rate limit, context overflow และ tool permission ได้
-7. ออกแบบ lab หรือ assignment สำหรับนักศึกษาโดยไม่เปิดเผย secret จริง
+1. Explain OpenClaw as an AI-agent gateway.
+2. Distinguish model providers, model refs, runtimes, tools, and channels.
+3. Describe how OpenClaw can connect to OpenAI and OpenRouter.
+4. Choose a model strategy for reasoning, coding, low-cost workloads, and automation.
+5. Design prompts for summarization, web search, file workflows, and classification.
+6. Identify risks related to API keys, tokens, cost, rate limits, context overflow, and tool permissions.
+7. Design a safe lab or assignment without exposing real secrets.
 
 ---
 
-## 2. Executive Summary สำหรับผู้สอน
+## 2. Executive Summary for Instructors
 
-OpenClaw เป็นแพลตฟอร์ม AI Agent แบบ open-source ที่ทำหน้าที่เชื่อมผู้ใช้เข้ากับโมเดลและช่องทางสื่อสารหลายแบบ เช่น Telegram, Discord, Slack, Signal, iMessage และ WhatsApp รวมถึงรองรับ LLM providers หลายรายผ่านการตั้งค่า model/provider ที่ยืดหยุ่น [OpenRouter OpenClaw Integration, 2026]
+OpenClaw should be taught as a practical **agent gateway** rather than as a language model. The model is only one component of the system. A complete workflow also includes user channels, routing, tools, permissions, logging, and operational controls.
 
-ฝั่ง OpenAI ควรสอนผ่านแนวคิดสมัยใหม่ของ **Responses API**, **Function Calling**, **Structured Outputs**, และ built-in tools เช่น Web Search, File Search และ Computer Use เพราะแนวคิดเหล่านี้เป็นฐานของ agent workflow ใน API สมัยใหม่ [OpenAI Help Center, 2026]
+When using OpenAI GPT-5.x in class, instructors should focus on the following learning themes:
 
-ฝั่ง OpenClaw ควรเน้นว่า model reference หรือ `provider/model` ไม่ใช่แค่ชื่อโมเดล แต่เป็นวิธีระบุเส้นทางการเรียก provider เช่น `openai/gpt-5.6-sol` หรือ `openrouter/<provider>/<model>` โดย OpenClaw docs ระบุว่าหาก model ID แบบ OpenRouter มี `/` อยู่ภายใน ต้องใส่ provider prefix ให้ครบ เช่น `openrouter/moonshotai/kimi-k2` [OpenClaw Models CLI, 2026]
+- AI-agent architecture
+- Model-provider selection
+- Responses-style workflows
+- Function calling and structured outputs
+- Tool permissions
+- Prompt design
+- Cost control
+- Security and governance
+
+OpenRouter can be introduced as an optional routing layer that allows the same teaching pattern to extend beyond one provider. Students should understand that provider routing is an architectural choice, not just a command-line setting.
 
 ---
 
@@ -76,474 +85,568 @@ Output
 - Teaching Demo
 ```
 
-### Teaching Note
+### Instructor Note
 
-ให้ผู้สอนเน้นว่า OpenClaw ไม่ใช่ “โมเดล AI” โดยตรง แต่เป็น **agent orchestration layer** หรือระบบประสานงานระหว่างผู้ใช้ โมเดล เครื่องมือ และช่องทางสื่อสาร
-
----
-
-## 4. คำศัพท์หลักที่นิสิตต้องเข้าใจ
-
-| Term | ความหมายแบบสั้น | ตัวอย่าง |
-|---|---|---|
-| Agent | ระบบที่รับเป้าหมาย แล้ววางแผน/ใช้เครื่องมือเพื่อตอบสนอง | AI ช่วยสรุปข่าวรายวัน |
-| Gateway | จุดกลางที่รับคำสั่งและส่งต่อไปยัง agent/model/tool | OpenClaw Gateway |
-| Model Provider | ผู้ให้บริการโมเดล | OpenAI, OpenRouter |
-| Model Ref | รูปแบบอ้างอิงโมเดล | `openai/gpt-5.6-sol` |
-| Tool | ความสามารถเสริมที่ agent ใช้ได้ | Web Search, File Search, Function Calling |
-| Channel | ช่องทางคุยกับ agent | Telegram, Dashboard |
-| Runtime | สภาพแวดล้อมที่ agent ใช้เรียก model/tool | OpenClaw runtime, Codex-compatible runtime |
-| Context Window | ขนาดข้อมูลที่โมเดลรับได้ในหนึ่งงาน | prompt + history + files + output budget |
-| Rate Limit | ข้อจำกัดการเรียกใช้ API | requests/minute, tokens/minute |
-| Secret | ข้อมูลลับ เช่น API Key | `OPENAI_API_KEY`, `OPENROUTER_API_KEY` |
-
----
-
-## 5. Model Strategy: GPT-5.x สำหรับงานสอน
-
-จากเอกสาร OpenAI API Models ล่าสุด OpenAI แนะนำให้เลือกตระกูล GPT-5.6 ตามวัตถุประสงค์งาน ได้แก่ Sol สำหรับ reasoning/coding ที่ซับซ้อน, Terra สำหรับสมดุลระหว่างความฉลาดกับต้นทุน และ Luna สำหรับงานปริมาณมากที่ต้องประหยัดต้นทุน [OpenAI Models, 2026]
-
-| งานสอน | Model Strategy | เหตุผล |
-|---|---|---|
-| วิเคราะห์โจทย์ซับซ้อน | GPT-5.x reasoning/high-capability | ต้องการ reasoning และ coding คุณภาพสูง |
-| สรุปเอกสาร | GPT-5.x balanced | ต้องการคุณภาพและต้นทุนสมดุล |
-| งาน cron รายวัน | GPT-5.x cost-sensitive หรือ OpenRouter free model | ลดค่าใช้จ่ายและ token |
-| classification เบื้องต้น | lightweight model | ไม่ต้องใช้โมเดลใหญ่ทุกครั้ง |
-| coding demo | GPT-5.x coding/reasoning | เหมาะกับการอธิบายโค้ดและแก้ bug |
-
-### ตัวอย่าง Model Ref เชิงแนวคิด
-
-```bash
-# ตรวจ model ที่ provider รองรับจริงก่อนใช้งาน
-openclaw models list --provider openai
-openclaw models list --provider openrouter
-
-# ตัวอย่างเชิงแนวคิด: ตั้ง OpenAI เป็น primary
-openclaw models set openai/gpt-5.6-sol
-
-# ตัวอย่างเชิงแนวคิด: ใช้ OpenRouter free model
-openclaw models set openrouter/free
-```
-
-> หมายเหตุสำหรับผู้สอน: model name และสิทธิ์การเข้าถึงเปลี่ยนได้ตามบัญชี/แผนบริการ/API policy จึงควรสอนให้นักศึกษาตรวจสอบด้วย `openclaw models list --provider <id>` ก่อนใช้จริง
-
----
-
-## 6. OpenAI API Concepts ที่ควรสอน
-
-### 6.1 Responses API
-
-Responses API เป็นแนวคิดกลางสำหรับการสร้าง agent workflow สมัยใหม่ เพราะรวมความสามารถที่เดิมกระจายอยู่ระหว่าง Chat Completions และ Assistants API และรองรับ function calling ใน workflow เดียวกัน [OpenAI Help Center, 2026]
-
-### 6.2 Function Calling
-
-Function Calling คือวิธีให้โมเดลเชื่อมต่อกับระบบภายนอก เช่น database, API, tool, calculation หรือ internal service โดยโมเดลสร้าง argument เพื่อเรียก function ที่ผู้พัฒนากำหนด [OpenAI Help Center, 2026]
-
-ตัวอย่าง use case ในห้องเรียน:
+Start by asking students this question:
 
 ```text
-ผู้ใช้ถาม: “สรุปยอดขายวันนี้และแจ้งเตือนถ้าต่ำกว่าเป้า”
-Agent ทำงาน:
-1. เรียก function get_sales_today()
-2. วิเคราะห์ยอดขายเทียบ target
-3. เรียก function send_telegram_alert() ถ้าต่ำกว่าเกณฑ์
-4. สรุปผลเป็นภาษาไทย
+If GPT is the model, what parts of the system are not the model?
 ```
 
-### 6.3 Structured Outputs
-
-Structured Outputs ช่วยให้ function-call arguments ตรงตาม JSON Schema เมื่อกำหนด `strict: true` ใน function definition บน model/request configuration ที่รองรับ [OpenAI Help Center, 2026]
-
-ตัวอย่างสำหรับสอนแนวคิด:
-
-```json
-{
-  "task_type": "document_summary",
-  "priority": "normal",
-  "language": "th",
-  "required_sections": ["summary", "risks", "action_items"]
-}
-```
-
-### 6.4 Built-in Tools
-
-OpenAI ระบุว่า model รุ่นล่าสุดรองรับ tools เช่น Functions, Web Search, File Search และ Computer Use โดยมีการคิดค่าบริการตาม model และบาง tool-specific call [OpenAI Models, 2026]
-
-> Teaching Point: การใช้ tool ทำให้ agent เก่งขึ้น แต่เพิ่มความเสี่ยงเรื่อง cost, permission, reliability และ governance
+Expected answers include gateway, tools, channels, files, prompts, permissions, logs, and scheduled jobs.
 
 ---
 
-## 7. OpenClaw Model Provider และ Routing
+## 4. Core Vocabulary
 
-OpenClaw ใช้แนวคิด model ref แบบ `provider/model` เพื่อระบุ provider และ model โดยเอกสาร OpenClaw อธิบายว่า prefix เช่น `openai/<model>` ใช้เลือก canonical OpenAI provider และไม่ควรตีความว่า prefix เดียวกันหมายถึง runtime เดียวกันเสมอไป [OpenClaw Model Providers, 2026]
-
-### ตัวอย่าง
-
-```bash
-# OpenAI provider
-openclaw models set openai/gpt-5.6-sol
-
-# OpenRouter provider ที่ model id มี path หลายชั้น
-openclaw models set openrouter/moonshotai/kimi-k2
-
-# Free routing ของ OpenRouter ตามที่ repo นี้ใช้เป็นแนวทางสอน
-openclaw models set openrouter/free
-```
-
-### ประเด็นที่ควรเน้นในห้องเรียน
-
-1. `openai/<model>` = เลือก OpenAI provider/model
-2. `openrouter/<provider>/<model>` = ผ่าน OpenRouter แล้วเลือก provider/model ด้านหลัง
-3. `openrouter/free` = แนวคิด free model routing ที่เหมาะกับการทดลอง แต่ต้องตรวจ availability เสมอ
-4. `openrouter/auto` = สะดวก แต่ควรระวังค่าใช้จ่าย เพราะอาจเลือก model ที่ไม่ใช่ free-only
-5. หาก provider/model เปลี่ยนหรือ model ถูก deprecate ต้องมี fallback และ troubleshooting playbook
+| Term | Teaching Definition |
+|---|---|
+| **AI Agent** | A system that can use a model plus tools, memory/context, and instructions to complete a task. |
+| **Gateway** | The OpenClaw component that routes user requests to models and tools. |
+| **Model Provider** | A provider such as OpenAI, OpenRouter, Anthropic, Gemini, or a local endpoint. |
+| **Model Ref** | A provider-qualified model reference, such as `openai/<model>` or `openrouter/<provider>/<model>`. |
+| **Tool Call** | A structured request from the model or agent to use an external capability. |
+| **Structured Output** | A response constrained to a defined schema such as JSON. |
+| **Cron Automation** | A scheduled task that runs automatically at a defined time. |
+| **Context Window** | The maximum amount of input and output the model can handle in one interaction. |
+| **Token Hygiene** | The practice of protecting API keys, tokens, credentials, and logs. |
 
 ---
 
-## 8. Installation / Onboarding Script สำหรับ Demo
+## 5. Teaching Model: Three-Layer Explanation
 
-### 8.1 OpenRouter Setup Wizard
+Use this three-layer model to make the system easy to understand.
 
-OpenRouter documentation แนะนำให้ใช้ OpenClaw setup wizard ด้วยคำสั่ง `openclaw onboard` เพื่อเลือก OpenRouter, ใส่ API key, เลือก model และตั้งค่า messaging channel [OpenRouter OpenClaw Integration, 2026]
+### Layer 1: User Experience
 
-```bash
-openclaw onboard
-```
+Students interact through a channel:
 
-### 8.2 OpenRouter Quick Start แบบ CLI
+- Dashboard
+- Telegram
+- CLI
+- Other messaging channels
 
-```bash
-export OPENROUTER_API_KEY="<your-openrouter-api-key>"
+### Layer 2: Agent Orchestration
 
-openclaw onboard \
-  --auth-choice apiKey \
-  --token-provider openrouter \
-  --token "$OPENROUTER_API_KEY"
-```
+OpenClaw receives the request, maintains the session, applies configuration, and decides which model or tool path to use.
 
-### 8.3 OpenAI Setup เชิงแนวคิด
+### Layer 3: Model and Tool Execution
 
-```bash
-# Login / Auth กับ OpenAI provider
-openclaw models auth login --provider openai
-
-# ตรวจสถานะ provider/model
-openclaw models status
-openclaw models status --probe
-
-# ตั้ง model หลัก
-openclaw models set openai/gpt-5.6-sol
-```
-
-> สำหรับห้องเรียน: ห้ามให้นักศึกษาส่ง API key ใน chat, Google Form, GitHub issue, screenshot หรือเอกสารส่งงาน
+The selected provider returns the answer or triggers tool-related workflows such as search, file access, function calling, or automation.
 
 ---
 
-## 9. Lab 1: ตรวจระบบและ Model Provider
+## 6. Instructor Demonstration Sequence
 
-### Objective
+Recommended sequence:
 
-ให้นักศึกษาเข้าใจการตรวจสถานะก่อนใช้งาน agent
+1. Show the architecture diagram.
+2. Open the terminal and check OpenClaw status.
+3. Open the Dashboard.
+4. Authenticate a provider.
+5. List available models.
+6. Set a primary model and a fallback.
+7. Run a short prompt.
+8. Show the difference between a normal answer and a tool-augmented answer.
+9. Create a lightweight Cron task.
+10. Close with security and cost-control rules.
 
-### Commands
+---
+
+## 7. Setup Commands
+
+### 7.1 Install or Verify OpenClaw
 
 ```bash
 openclaw --version
 openclaw doctor
 openclaw gateway status
+```
+
+If installation is needed:
+
+```bash
+npm install -g openclaw@latest
+openclaw onboard --install-daemon
+```
+
+### 7.2 Open the Dashboard
+
+```bash
+openclaw dashboard
+```
+
+Or open:
+
+```bash
+open http://127.0.0.1:18789
+```
+
+### 7.3 Authenticate a Provider
+
+OpenAI example:
+
+```bash
+openclaw models auth login --provider openai
+```
+
+OpenRouter example:
+
+```bash
+openclaw models auth login --provider openrouter
+```
+
+### 7.4 Check Model Status
+
+```bash
 openclaw models status
+openclaw models status --probe
 openclaw models list --provider openai
 openclaw models list --provider openrouter
 ```
 
-### Expected Learning
-
-นักศึกษาควรตอบได้ว่า:
-
-- Gateway ทำงานหรือไม่
-- Provider เชื่อมต่อแล้วหรือยัง
-- มี model ใดให้ใช้จริงในบัญชีของตน
-- model ref ที่พิมพ์ถูกต้องหรือไม่
-
 ---
 
-## 10. Lab 2: Prompt Pattern สำหรับ AI Agent
+## 8. Model Strategy for Teaching
 
-### Template
+### 8.1 Model Selection Logic
+
+| Workload | Recommended Strategy |
+|---|---|
+| Short explanation | Use a lightweight model. |
+| Reasoning-heavy analysis | Use a reasoning-capable model. |
+| Coding demo | Use a model strong at code generation and debugging. |
+| Daily automation | Use a low-cost or free model where accuracy requirements are modest. |
+| Sensitive or high-risk output | Use stronger controls, shorter context, and human review. |
+
+### 8.2 Classroom Rule
+
+For public classroom demos:
 
 ```text
-บทบาท:
-คุณคือ AI Agent สำหรับ...
-
-งาน:
-ให้ทำอะไรอย่างชัดเจน
-
-ข้อมูล:
-ให้ใช้ข้อมูลใด
-
-ข้อจำกัด:
-ห้ามทำอะไร / จำกัดความยาว / ต้องอ้างอิงอะไร
-
-รูปแบบผลลัพธ์:
-ตาราง / bullet / JSON / Markdown
-
-เกณฑ์ตรวจสอบ:
-หากข้อมูลไม่พอ ให้ระบุว่า “ข้อมูลไม่เพียงพอ”
+Use test accounts.
+Use demo keys only.
+Keep outputs short.
+Avoid confidential data.
+Avoid full-document uploads.
+Use verified model refs.
 ```
 
-### Example: Daily News Brief
+---
+
+## 9. Prompt Engineering Pattern
+
+Use this prompt structure for labs:
 
 ```text
-บทบาท:
-คุณคือ AI Agent ช่วยสรุปข่าวสำหรับนักศึกษา IT
+Role:
+You are ...
 
-งาน:
-สรุปข่าวเทคโนโลยีสำคัญใน 24 ชั่วโมงล่าสุด
+Task:
+Do ...
 
-ข้อจำกัด:
-- ไม่เกิน 3 ข่าว
-- ตอบภาษาไทย
-- ระบุแหล่งข่าวหรือวันที่ถ้ามี
-- ห้ามคาดเดาถ้าไม่มีข้อมูล
+Input:
+Use the following data ...
 
-รูปแบบผลลัพธ์:
-1. หัวข้อข่าว
-2. สรุปไม่เกิน 4 บรรทัด
-3. ประเด็นที่นิสิตควรเรียนรู้
+Constraints:
+- Answer in English.
+- Use no more than 500 words.
+- Do not call external tools unless instructed.
+- If information is missing, say so.
+
+Output format:
+Use headings and bullet points.
 ```
 
----
-
-## 11. Lab 3: Cron Automation แบบประหยัด
-
-### Use Case
-
-สร้างงานสรุปข่าวรายวันหรือเตือนความจำสำหรับการเรียน
-
-```bash
-MSG=$(cat <<'EOF'
-ทำ Daily IT Learning Brief ภาษาไทย
-- สรุปไม่เกิน 3 ประเด็น
-- เน้น AI, API, Software Engineering, Cybersecurity
-- ระบุสิ่งที่นิสิตควรนำไปทดลองต่อ
-- ถ้าข้อมูลไม่เพียงพอ ให้บอกว่า “ข้อมูลไม่เพียงพอ”
-EOF
-)
-
-openclaw cron add \
-  --name "daily-it-learning-brief" \
-  --cron "0 8 * * *" \
-  --tz "Asia/Bangkok" \
-  --session isolated \
-  --announce \
-  --channel telegram \
-  --to "<telegram-chat-id>" \
-  --model openrouter/free \
-  --message "$MSG"
-```
-
-### Debrief Questions
-
-1. ทำไม cron ควรใช้ session แบบ isolated?
-2. ถ้าใช้ model แพงใน cron รายวัน จะเกิดความเสี่ยงอะไร?
-3. ถ้า agent ตอบยาวเกินไป จะควบคุมอย่างไร?
-4. ถ้า model free unavailable ต้อง fallback อย่างไร?
-
----
-
-## 12. Lab 4: File Workflow แบบปลอดภัย
-
-### Folder Setup
-
-```bash
-mkdir -p "$HOME/AI-Agent-Lab/input"
-mkdir -p "$HOME/AI-Agent-Lab/output"
-mkdir -p "$HOME/AI-Agent-Lab/backup"
-```
-
-### Safe File Reading
-
-```bash
-head -80 "$HOME/AI-Agent-Lab/input/sample.txt"
-```
-
-### Safe Output Writing
-
-```bash
-cat <<'EOF' > "$HOME/AI-Agent-Lab/output/summary.md"
-# Summary
-
-- Key point 1
-- Key point 2
-- Action item
-EOF
-```
-
-### Backup Before Edit
-
-```bash
-cp "$HOME/AI-Agent-Lab/output/summary.md" \
-   "$HOME/AI-Agent-Lab/backup/summary.$(date +%Y%m%d-%H%M%S).md"
-```
-
----
-
-## 13. Security & Governance สำหรับห้องเรียน
-
-### 13.1 Secret Hygiene
+### Example Prompt
 
 ```text
-[ ] ไม่ commit API key ลง GitHub
-[ ] ไม่ส่ง API key ในแชต
-[ ] ไม่ถ่าย screenshot ที่มี token
-[ ] ใช้ .env และ .gitignore
-[ ] แยก key สำหรับ demo/lab
-[ ] ตั้ง spending limit ใน provider dashboard ถ้าทำได้
-```
+Role:
+You are a teaching assistant for an IT course.
 
-### 13.2 Tool Permission
+Task:
+Explain the difference between an AI model and an AI agent gateway.
 
-ผู้สอนควรอธิบายว่า tool-enabled agent มีความเสี่ยงมากกว่า chatbot ทั่วไป เพราะ agent อาจอ่านไฟล์ เรียก API ส่งข้อความ หรือรัน automation ได้ จึงต้องออกแบบ permission แบบ least privilege
+Constraints:
+- Answer in English.
+- Use no more than six bullet points.
+- Use beginner-friendly language.
+- Do not use web search.
 
-### 13.3 Cost Governance
-
-```text
-[ ] ใช้ lightweight model สำหรับงานซ้ำ
-[ ] จำกัด output length
-[ ] หลีกเลี่ยงการอ่านไฟล์ยาวทั้งฉบับ
-[ ] ไม่ตั้ง cron ถี่เกินจำเป็น
-[ ] ตรวจ usage dashboard ของ provider
-[ ] แยก demo key จาก production key
+Output format:
+Bullet points only.
 ```
 
 ---
 
-## 14. Troubleshooting Playbook
+## 10. Demonstration: From Simple Prompt to Agent Workflow
 
-| อาการ | สาเหตุที่เป็นไปได้ | วิธีตรวจ | วิธีแก้ |
+### Step 1: Simple Prompt
+
+```text
+Explain what OpenClaw does in five bullet points.
+```
+
+### Step 2: Constrained Prompt
+
+```text
+Explain what OpenClaw does in five bullet points for first-year IT students.
+Avoid marketing language.
+```
+
+### Step 3: Tool-Aware Prompt
+
+```text
+Check the latest configured model status first.
+Then explain whether the system is ready for a classroom demo.
+Keep the answer concise.
+```
+
+### Step 4: Scheduled Workflow Prompt
+
+```text
+Create a daily 8:00 AM brief.
+Use a lightweight model.
+Limit the response to three items.
+Ask for confirmation before running any expensive task.
+```
+
+---
+
+## 11. Lab 1: Architecture Mapping
+
+### Goal
+
+Students map the OpenClaw architecture and identify which component is responsible for each action.
+
+### Student Task
+
+Draw a diagram showing:
+
+- User interface
+- OpenClaw Gateway
+- Agent session
+- Model provider
+- Tool layer
+- Output layer
+
+### Evaluation Criteria
+
+| Criteria | Points |
+|---|---:|
+| Correctly identifies the gateway | 2 |
+| Distinguishes model and provider | 2 |
+| Includes tools and outputs | 2 |
+| Explains the flow clearly | 2 |
+| Uses correct terminology | 2 |
+
+---
+
+## 12. Lab 2: Model Ref and Provider Routing
+
+### Goal
+
+Students understand the difference between a provider model slug and an OpenClaw model ref.
+
+### Student Task
+
+Classify each example:
+
+| Example | Classification |
+|---|---|
+| `openai/<model>` | OpenAI model ref |
+| `openrouter/free` | OpenRouter free router pattern |
+| `openrouter/<provider>/<model-id>:free` | OpenRouter provider-qualified model ref |
+| `<provider>/<model-id>:free` | Provider model slug, not necessarily a full OpenClaw ref |
+
+### Discussion Question
+
+Why is an exact model ref safer than an ambiguous model name in a workshop?
+
+---
+
+## 13. Lab 3: Safe Prompt Design
+
+### Goal
+
+Students design prompts that control scope, cost, and risk.
+
+### Student Task
+
+Write a prompt for a daily brief that:
+
+- Answers in English
+- Uses no more than 500 words
+- Lists no more than three items
+- Does not read full PDFs
+- Includes sources only if available
+- States clearly when information is insufficient
+
+### Instructor Feedback Points
+
+- Is the task clear?
+- Are constraints measurable?
+- Is tool usage controlled?
+- Is the output format specified?
+- Does the prompt avoid unnecessary cost?
+
+---
+
+## 14. Lab 4: Troubleshooting Simulation
+
+### Scenario A
+
+```text
+Error: Unknown model
+```
+
+Expected checks:
+
+1. Run `openclaw models list --provider <provider>`.
+2. Confirm the model ref format.
+3. Check whether the model exists in the current catalog.
+4. Restart the gateway after configuration changes.
+5. Run `openclaw models status --probe`.
+
+### Scenario B
+
+```text
+Error: Missing authentication
+```
+
+Expected checks:
+
+1. Confirm the provider is authenticated.
+2. Re-run provider login.
+3. Check environment variables or config files.
+4. Restart the gateway.
+5. Avoid displaying real keys during troubleshooting.
+
+### Scenario C
+
+```text
+Context overflow
+```
+
+Expected fixes:
+
+1. Start a new session.
+2. Reduce prompt size.
+3. Read only the required part of a file.
+4. Split the task into stages.
+5. Limit output length.
+
+---
+
+## 15. Security Module
+
+Security should be taught as a required part of AI-agent operation, not as an optional topic.
+
+### Never Share
+
+```text
+API keys
+Gateway tokens
+Telegram bot tokens
+Passwords
+Session tokens
+.env files
+Auth profiles
+Logs containing secrets
+```
+
+### Safer Practice
+
+- Use demo accounts.
+- Use disposable keys for workshops.
+- Rotate keys after public demonstrations.
+- Sanitize logs before sharing.
+- Avoid student data or customer data in prompts.
+- Do not commit secrets to GitHub.
+
+### Instructor Demonstration
+
+Show a fake key pattern only:
+
+```text
+sk-or-v1-REDACTED_EXAMPLE_ONLY
+```
+
+Never show a real API key.
+
+---
+
+## 16. Cost-Control Module
+
+Cost control is part of responsible AI operations.
+
+### Cost Drivers
+
+- Long prompts
+- Long outputs
+- Large files
+- Repeated tool calls
+- Frequent Cron jobs
+- Expensive models
+- Unbounded web search
+
+### Cost-Safe Classroom Defaults
+
+```text
+Output length: short
+Tool calls: minimal
+Cron frequency: low
+Model: verified low-cost or free model
+Files: small samples only
+Session: new session for each lab
+```
+
+---
+
+## 17. Suggested Three-Hour Teaching Plan
+
+| Time | Segment | Instructor Action | Student Output |
 |---|---|---|---|
-| `401 Unauthorized` | API key ผิดหรือหมดอายุ | `openclaw models status --probe` | login provider ใหม่ |
-| `402 Payment Required` | credit ไม่พอ | provider dashboard | เติม credit / ลด token / เปลี่ยน model |
-| `rate limit` | request หรือ token เกิน limit | logs / provider dashboard | รอ, ลด prompt, ลด tool call |
-| `context overflow` | prompt + file + history ใหญ่เกิน | ตรวจ input size | แยกงาน / ใช้ summary / ลดไฟล์ |
-| model not found | model ref ผิดหรือถูก deprecate | `openclaw models list --provider <id>` | เลือก model ใหม่ |
-| gateway ไม่ตอบ | gateway down หรือ session ค้าง | `openclaw gateway status` | restart gateway / เปิด session ใหม่ |
-| cron ไม่รัน | cron expression หรือ timezone ผิด | `openclaw cron list` | แก้ cron / timezone |
+| 0:00–0:15 | Opening | Explain the goal and show architecture. | Lesson expectations. |
+| 0:15–0:35 | Concepts | Define gateway, provider, model ref, and tool. | Concept notes. |
+| 0:35–1:00 | Setup | Verify OpenClaw and open Dashboard. | Working local status check. |
+| 1:00–1:25 | Provider authentication | Demonstrate provider login safely. | Understanding of token handling. |
+| 1:25–1:50 | Model strategy | Show model listing, set, fallback, and probe. | Model strategy table. |
+| 1:50–2:15 | Prompt lab | Run controlled prompts. | Prompt draft. |
+| 2:15–2:40 | Automation | Explain and design a Cron task. | Cron design draft. |
+| 2:40–2:55 | Troubleshooting | Review common errors. | Troubleshooting checklist. |
+| 2:55–3:00 | Wrap-up | Reinforce security and cost controls. | Key takeaways. |
 
 ---
 
-## 15. Teaching Flow: 3 ชั่วโมง
+## 18. Slide Outline
 
-| เวลา | กิจกรรม | เป้าหมาย |
-|---|---|---|
-| 0:00–0:15 | เปิดบทเรียนและภาพรวม AI Agent | สร้าง mental model |
-| 0:15–0:35 | OpenClaw architecture | เข้าใจ gateway/provider/tool/channel |
-| 0:35–1:00 | OpenAI GPT-5.x + Responses API + Tools | เข้าใจ API สมัยใหม่ |
-| 1:00–1:20 | Demo: model status / provider routing | เห็นคำสั่งจริง |
-| 1:20–1:30 | Break | - |
-| 1:30–2:00 | Lab: prompt pattern + structured output | ฝึกออกแบบ prompt |
-| 2:00–2:25 | Lab: Cron + Telegram scenario | เห็น automation |
-| 2:25–2:45 | Security, cost, rate limit, context overflow | เข้าใจ risk governance |
-| 2:45–3:00 | Quiz / discussion / wrap-up | ประเมินผล |
-
----
-
-## 16. Slide Outline สำหรับผู้สอน
-
-1. AI Agent คืออะไร
-2. Chatbot vs Agent vs Automation
-3. OpenClaw Architecture
-4. OpenAI GPT-5.x Model Strategy
-5. Responses API, Function Calling, Structured Outputs
-6. OpenRouter และแนวคิด Free Model Routing
-7. CLI Demo: install/status/model/provider
-8. Prompt Pattern ที่ใช้สอนได้จริง
-9. Cron Automation Scenario
-10. Security & Cost Governance
-11. Troubleshooting Playbook
-12. Assignment & Rubric
+1. What is an AI agent?
+2. What is OpenClaw?
+3. OpenClaw architecture
+4. Model providers and model refs
+5. OpenAI GPT-5.x concept
+6. OpenRouter as an optional routing layer
+7. Tools: Web Search, File Search, Cron, local files
+8. Prompt pattern
+9. Security and API-key hygiene
+10. Cost and rate-limit control
+11. Troubleshooting playbook
+12. Student lab instructions
+13. Assignment and rubric
+14. Summary and Q&A
 
 ---
 
-## 17. Quiz สำหรับนิสิต
+## 19. Quiz
 
 ### Multiple Choice
 
-1. OpenClaw ทำหน้าที่หลักคล้ายข้อใดมากที่สุด?
-   - A. Database Server
-   - B. AI Agent Gateway / Orchestration Layer
-   - C. Spreadsheet Tool
-   - D. Static Website Generator
+1. What is OpenClaw in this lesson?
+   - A. A spreadsheet application
+   - B. An AI-agent gateway
+   - C. A database server
+   - D. A password manager
 
-2. ข้อใดเป็น model ref ที่สะท้อน provider/model pattern?
-   - A. `localhost:3000`
-   - B. `openai/gpt-5.6-sol`
-   - C. `npm install`
-   - D. `index.html`
+2. What is a model provider?
+   - A. A service that supplies or routes AI models
+   - B. A file browser
+   - C. A keyboard shortcut
+   - D. A Markdown parser
 
-3. เหตุใดจึงไม่ควรใช้ model ราคาแพงกับ cron ทุกงาน?
-   - A. เพราะ cron ใช้ไม่ได้กับ AI
-   - B. เพราะอาจเกิดค่าใช้จ่ายสะสมโดยไม่จำเป็น
-   - C. เพราะ model ใหญ่ตอบไม่ได้
-   - D. เพราะ OpenClaw ไม่รองรับ cron
+3. Why should instructors avoid showing real API keys?
+   - A. They are visually distracting
+   - B. They may expose account access and billing risk
+   - C. They make the terminal slower
+   - D. They are not compatible with Markdown
+
+4. What is context overflow?
+   - A. A styling issue
+   - B. An authentication method
+   - C. A failure caused by too much input/output for the model context window
+   - D. A provider dashboard
 
 ### Short Answer
 
-1. อธิบายความแตกต่างระหว่าง `openai/<model>` กับ `openrouter/<provider>/<model>`
-2. ยกตัวอย่างความเสี่ยง 3 ข้อของ tool-enabled agent
-3. ออกแบบ prompt สำหรับ agent ที่ช่วยสรุปบทเรียน 1 หน้า พร้อมเงื่อนไข output
+1. Explain the difference between a model and an agent gateway.
+2. Give two examples of unsafe token handling.
+3. Give two ways to reduce cost in a scheduled AI-agent task.
+4. Explain why exact model refs are safer than ambiguous model names.
 
 ---
 
-## 18. Assignment
+## 20. Assignment
 
-ให้นิสิตออกแบบ AI Agent Scenario 1 งาน โดยต้องมี:
+### Assignment Title
 
-1. Use Case
-2. User Persona
-3. Model Strategy
-4. Prompt Pattern
-5. Tool ที่ต้องใช้
-6. Security Checklist
-7. Cost Control Plan
-8. Troubleshooting Plan
+Design a Safe AI-Agent Workflow with OpenClaw
+
+### Student Deliverables
+
+Students must submit:
+
+1. An architecture diagram.
+2. A model strategy table.
+3. A safe prompt template.
+4. A proposed Cron automation design.
+5. A security checklist.
+6. A short troubleshooting plan.
 
 ### Rubric
 
-| เกณฑ์ | คะแนน |
+| Criteria | Points |
 |---|---:|
-| อธิบาย use case ชัดเจน | 20 |
-| เลือก model/provider เหมาะสม | 20 |
-| prompt มี role/task/context/output/constraint | 20 |
-| ระบุความเสี่ยงด้าน security/cost | 20 |
-| มี troubleshooting ที่ใช้งานได้จริง | 20 |
-| รวม | 100 |
+| Architecture accuracy | 20 |
+| Model strategy clarity | 20 |
+| Prompt design quality | 20 |
+| Security controls | 20 |
+| Troubleshooting plan | 10 |
+| Professional formatting | 10 |
+| **Total** | **100** |
 
 ---
 
-## 19. Instructor Notes
+## 21. Instructor Checklist
 
-- สำหรับห้องเรียนจริง ควรเตรียม API key แบบ demo ที่จำกัดวงเงินไว้แล้ว
-- ไม่ควรให้นักศึกษาใช้ production account ส่วนตัวใน live demo
-- ถ้าจะใช้ OpenRouter free model ให้เตรียม fallback เพราะ free model อาจเต็ม เปลี่ยนชื่อ หรือถูก deprecate ได้
-- ให้สอนนักศึกษาว่า “AI Agent ที่ดี” ไม่ใช่ตอบยาวที่สุด แต่ต้องควบคุมแหล่งข้อมูล รูปแบบ คำสั่ง เครื่องมือ และความเสี่ยงได้
-- ทุก lab ควรมี rollback หรือ cleanup step
+Before teaching:
 
----
-
-## 20. References / External Sources
-
-1. OpenAI. (2026). *Models - OpenAI API*. Retrieved August 1, 2026, from https://developers.openai.com/api/docs/models
-2. OpenAI Help Center. (2026). *Function Calling in the OpenAI API*. Retrieved August 1, 2026, from https://help.openai.com/en/articles/8555517
-3. OpenClaw. (2026). *Models CLI*. Retrieved August 1, 2026, from https://docs.openclaw.ai/cli/models
-4. OpenClaw. (2026). *Model providers*. Retrieved August 1, 2026, from https://docs.openclaw.ai/concepts/model-providers
-5. OpenRouter. (2026). *OpenClaw Integration*. Retrieved August 1, 2026, from https://openrouter.ai/docs/cookbook/coding-agents/openclaw-integration
-6. OpenAI Agents SDK. (2026). *Tools*. Retrieved August 1, 2026, from https://openai.github.io/openai-agents-python/tools/
+- [ ] Verify OpenClaw installation.
+- [ ] Verify provider authentication.
+- [ ] Confirm model availability.
+- [ ] Test `openclaw models status --probe`.
+- [ ] Prepare fake keys for slides.
+- [ ] Remove all real secrets from screenshots.
+- [ ] Prepare backup prompts.
+- [ ] Prepare at least one troubleshooting scenario.
+- [ ] Keep all sample files small and non-sensitive.
 
 ---
 
-## 21. Version Log
+## 22. Key Takeaways
 
-| Version | Date | Change |
-|---|---|---|
-| 1.0 | 2026-08-01 | Created trainer-ready lesson from external documentation research |
+- OpenClaw is an AI-agent gateway, not the model itself.
+- OpenAI and OpenRouter are model-provider options.
+- Exact model refs reduce configuration errors.
+- Tool usage must be controlled.
+- Prompt design affects cost, safety, and reliability.
+- API keys and tokens must never be exposed.
+- Cron automation should be short, scoped, and cost-aware.
+- Students should learn both the command flow and the operational reasoning behind it.
+
+---
+
+## 23. External References
+
+- OpenClaw documentation: https://docs.openclaw.ai/
+- OpenClaw Models CLI: https://docs.openclaw.ai/cli/models
+- OpenClaw model providers: https://docs.openclaw.ai/concepts/model-providers
+- OpenAI API documentation: https://platform.openai.com/docs
+- OpenAI model documentation: https://platform.openai.com/docs/models
+- OpenRouter documentation: https://openrouter.ai/docs
+- OpenRouter Quickstart: https://openrouter.ai/docs/quickstart
+
+---
+
+## Summary
+
+This lesson plan helps IT instructors teach OpenClaw, OpenAI GPT-5.x, and OpenRouter through a practical, security-first, and operations-focused approach. The lesson emphasizes architecture, model strategy, prompt design, tool control, cost awareness, troubleshooting, and student lab design.
